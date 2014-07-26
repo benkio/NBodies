@@ -9,23 +9,21 @@ import java.awt.geom.Point2D
 
 class NBodiesCanvas() extends Panel {
 
-  var bodies = List[(Point2D, Double)]()
+  var bodiesDetails = List[(Point2D, Double)]()
 
   override def paintComponent(g: Graphics2D) {
+    super.paintComponent(g)
 
-    // Start by erasing this Canvas
-    g.clearRect(0, 0, size.width, size.height)
-
-    // Draw things that change on top of background
-    for (body <- bodies) {
-      g.setColor(Color.BLACK)
-      drawCircle(g, body._1.getX(), body._1.getY(), body._2)
+    for (bodyDetails <- bodiesDetails) {
+      drawCircle(g, bodyDetails._1.getX(), bodyDetails._1.getY(), bodyDetails._2)
     }
   }
 
-  def drawCircle(cg: Graphics2D, xCenter: Double, yCenter: Double, radius: Double) {
+  private def drawCircle(drawer: Graphics2D, xCenter: Double, yCenter: Double, radius: Double) {
     val ellipse = new Ellipse2D.Double(xCenter - radius, yCenter - radius, 2 * radius, 2 * radius);
-    cg.draw(ellipse);
+    drawer.setColor(Color.BLACK)
+    drawer.fill(ellipse);
   }
-  def setBodiesList(bodies: List[(Point2D, Double)]) = this.bodies = bodies
+
+  def setBodiesDetails(bodiesDet: List[(Point2D, Double)]) = bodiesDetails = bodiesDet
 }

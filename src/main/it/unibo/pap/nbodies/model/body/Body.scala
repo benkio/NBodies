@@ -10,7 +10,7 @@ class Body() extends Actor {
   var modified = true
   var mass = Random.nextDouble() * 10
   var radius = () => mass
-  val coordinate = new Point2D.Double(Random.nextDouble() * 500, Random.nextDouble() * 500)
+  val coordinate = new Point2D.Double(10 + Random.nextDouble() * 480, 10 + Random.nextDouble() * 480)
 
   /**
    * TODO: Implement the receive for the body

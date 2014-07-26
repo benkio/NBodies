@@ -41,7 +41,7 @@ object Configuration extends SimpleSwingApplication {
 	  reactions += {
 	    case ButtonClicked(b) => {
 	      this.dispose
-	      NBodies.startNBodies
+	      NBodies.startNBodies(nBodiesTextField.text.toInt, deltaTimeTextField.text.toInt)
 	      }
 	  }
   }

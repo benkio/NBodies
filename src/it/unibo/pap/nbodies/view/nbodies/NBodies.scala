@@ -29,16 +29,16 @@ object NBodies extends Frame {
     size = new Dimension(700, 700)
     peer.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
 
-    var actorSystem = ActorSystem("actorSystem")
-    var mainController = actorSystem.actorOf(Props(new MainController(bodiesNumber, deltaTime)), "bello")
-    var painter = actorSystem.actorOf(Props(new Painter(canvas)), "test")
-
     val deltaTimeTextField = new JSpinner()
     deltaTimeTextField.setModel(new javax.swing.SpinnerNumberModel(0, 0, 1000000000, 1))
     val deltaTimeSpinnerWrapped = Component.wrap(deltaTimeTextField)
     val canvas = new NBodiesCanvas() {
       preferredSize = new Dimension(500, 500)
     }
+
+    var actorSystem = ActorSystem("actorSystem")
+    var painter = actorSystem.actorOf(Props(new Painter(canvas)), "Painter")
+    var mainController = actorSystem.actorOf(Props(new MainController(bodiesNumber, deltaTime, painter.path)), "mainController")
 
     contents = new BoxPanel(Orientation.Vertical) {
       border = Swing.EmptyBorder(10, 20, 10, 20)

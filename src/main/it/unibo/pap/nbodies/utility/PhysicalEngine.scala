@@ -1,6 +1,6 @@
-package main.it.unibo.pap.nbodies.utility
+package it.unibo.pap.nbodies.utility
 
-import main.it.unibo.pap.nbodies.model.body.Body
+import it.unibo.pap.nbodies.model.body.Body
 import java.awt.geom.Point2D
 
 object PhysicalEngine {

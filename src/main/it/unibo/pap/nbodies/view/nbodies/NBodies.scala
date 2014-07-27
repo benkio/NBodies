@@ -1,7 +1,7 @@
 /**
  *
  */
-package main.it.unibo.pap.nbodies.view.nbodies
+package it.unibo.pap.nbodies.view.nbodies
 
 import java.awt.Dimension
 import scala.swing._
@@ -15,8 +15,8 @@ import javax.swing.WindowConstants
 import java.awt.geom.Point2D
 import javax.swing.JSpinner
 import scala.swing.event.ValueChanged
-import main.it.unibo.pap.nbodies.controller._
-import main.it.unibo.pap.nbodies.model.messages.Messages._
+import it.unibo.pap.nbodies.controller._
+import it.unibo.pap.nbodies.model.messages.Messages._
 
 /**
  * @author enricobenini

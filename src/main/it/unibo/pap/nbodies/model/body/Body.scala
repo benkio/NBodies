@@ -1,10 +1,10 @@
-package main.it.unibo.pap.nbodies.model.body
+package it.unibo.pap.nbodies.model.body
 
 import java.awt.geom.Point2D
 import akka.actor._
 import scala.util.Random
 import java.awt.Point
-import main.it.unibo.pap.nbodies.model.messages.Messages._
+import it.unibo.pap.nbodies.model.messages.Messages._
 
 class Body() extends Actor {
   var modified = true

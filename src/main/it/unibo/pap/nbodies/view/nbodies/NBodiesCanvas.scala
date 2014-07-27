@@ -1,4 +1,4 @@
-package main.it.unibo.pap.nbodies.view.nbodies
+package it.unibo.pap.nbodies.view.nbodies
 
 import scala.swing.Panel
 import java.awt.{ Color, Graphics }

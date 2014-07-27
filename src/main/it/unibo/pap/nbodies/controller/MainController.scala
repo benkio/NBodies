@@ -1,17 +1,17 @@
-package main.it.unibo.pap.nbodies.controller
+package it.unibo.pap.nbodies.controller
 
 import akka.actor._
 import akka.util._
 import java.awt.geom.Point2D
 import java.awt.Point
-import main.it.unibo.pap.nbodies.model._
-import main.it.unibo.pap.nbodies.model.body.Body
+import it.unibo.pap.nbodies.model._
+import it.unibo.pap.nbodies.model.body.Body
 import akka.dispatch.Futures
 import scala.concurrent.Await
 import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
 import scala.concurrent._
-import main.it.unibo.pap.nbodies.model.messages.Messages._
+import it.unibo.pap.nbodies.model.messages.Messages._
 
 class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath) extends Actor {
   implicit val ec = ExecutionContext.Implicits.global

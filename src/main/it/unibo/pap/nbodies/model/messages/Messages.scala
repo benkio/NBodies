@@ -1,4 +1,4 @@
-package main.it.unibo.pap.nbodies.model.messages
+package it.unibo.pap.nbodies.model.messages
 
 import akka.actor.ActorRef
 import java.awt.geom.Point2D

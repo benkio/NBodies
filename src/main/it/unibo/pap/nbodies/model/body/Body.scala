@@ -41,8 +41,8 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
       forceCalculatorRef ! CalculateForce(coordinate, mass)
     }
     case Force(newForce) => {
-      println("Body new force calculate of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
       force = newForce
+      println("Body(" ++ coordinate.getX().toString() ++ ", " ++ coordinate.getY().toString() ++ ") new force calculate of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
     }
   }
 }

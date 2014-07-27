@@ -1,6 +1,6 @@
-package it.unibo.pap.nbodies.utility
+package main.it.unibo.pap.nbodies.utility
 
-import it.unibo.pap.nbodies.model.body.Body
+import main.it.unibo.pap.nbodies.model.body.Body
 import java.awt.geom.Point2D
 
 object PhysicalEngine {
@@ -10,7 +10,7 @@ object PhysicalEngine {
    * Calculates the force between two bodies
    */
   def getForce(a: Body, b: Body): Double = {
-    g * a.mass * b.mass / math.pow(getDistance(a.coordinate , b. coordinate), 2)
+    g * a.mass * b.mass / math.pow(getDistance(a.coordinate, b.coordinate), 2)
   }
 
   /**

@@ -1,4 +1,4 @@
-package it.unibo.pap.nbodies.view.configuration
+package main.it.unibo.pap.nbodies.view.configuration
 
 import scala.swing._
 import scala.swing.BorderPanel.Position._
@@ -9,7 +9,7 @@ import scala.util.Random
 import javax.swing.JFormattedTextField
 import java.text.NumberFormat
 import javax.swing.JSpinner
-import it.unibo.pap.nbodies.view.nbodies.NBodies
+import main.it.unibo.pap.nbodies.view.nbodies.NBodies
 
 object Configuration extends SimpleSwingApplication {
 

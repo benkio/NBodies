@@ -1,24 +1,24 @@
-package it.unibo.pap.nbodies.controller
+package main.it.unibo.pap.nbodies.controller
 
 import akka.actor._
 import akka.util._
 import java.awt.geom.Point2D
 import java.awt.Point
-import it.unibo.pap.nbodies.model._
-import it.unibo.pap.nbodies.model.body.Body
+import main.it.unibo.pap.nbodies.model._
+import main.it.unibo.pap.nbodies.model.body.Body
 import akka.dispatch.Futures
 import scala.concurrent.Await
 import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
 import scala.concurrent._
-import it.unibo.pap.nbodies.model.Messages.Messages._
+import main.it.unibo.pap.nbodies.model.messages.Messages._
 
 class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath) extends Actor with IMainController {
   implicit val ec = ExecutionContext.Implicits.global
   implicit lazy val timeout = Timeout(5000)
 
   val initialBodiesNumber = bodiesNumber
-  val initialDeltaTime = deltaTime
+  var currentDeltaTime = deltaTime
   val painterRef = painter
   var bodies = List[ActorRef]()
   var i = 0
@@ -32,13 +32,16 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath) exte
    * TODO: Implement
    */
   override def receive = {
-    case "Start Button Pressed" => {
+    case StartSimultation(deltaTime) => {
       println("Start Button Pressed")
-
+      currentDeltaTime = deltaTime
     }
-    case "Stop Button Pressed" => println("Stop Button Pressed")
-    case "Reset Button Pressed" => println("Reset Button Pressed")
-    case "Delta Time Changed" => println("Delta Time Changed")
+    case Stop => println("Stop Button Pressed")
+    case Reset => println("Reset Button Pressed")
+    case OneStep(deltaTime) => {
+      println("One Step Button Pressed")
+      currentDeltaTime = deltaTime
+    }
   }
 
   private def createAndPaintBodies() = {

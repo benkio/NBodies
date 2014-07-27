@@ -9,8 +9,8 @@ object PhysicalEngine {
   /**
    * Calculates the force between two bodies
    */
-  def getForce(a: Body, b: Body): Double = {
-    g * a.mass * b.mass / math.pow(getDistance(a.coordinate, b.coordinate), 2)
+  def getForce(ma: Double, pa:Point2D.Double, mb: Double, pb:Point2D.Double): Double = {
+    g * ma * mb / math.pow(getDistance(pa, pb), 2)
   }
 
   /**
@@ -20,5 +20,12 @@ object PhysicalEngine {
     math.sqrt(
       math.pow(b.getX() - a.getX(), 2) +
         math.pow(b.getY() - a.getY(), 2))
+  }
+  
+  /**
+   * Calculate the escape velocity, where m is the mass and r the distance from the center of gravity
+   */
+  def escapeVelocity(m: Double, r: Double) {
+    math.sqrt(2 * g * m / r)
   }
 }

@@ -15,16 +15,14 @@ import it.unibo.pap.nbodies.model.messages.Messages._
 import it.unibo.pap.nbodies.model.force.ForceCalculator
 import main.it.unibo.pap.nbodies.controller.Implicit
 
-class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath) extends Actor {
+class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forceCalculator: ActorPath) extends Actor {
   implicit val ec = Implicit.ec
   implicit lazy val timeout = Implicit.timeout
   var currentBodiesNumber = bodiesNumber
   var currentDeltaTime = deltaTime
-  val painterRef = painter
   var i = 0
   createBodies(bodiesNumber)
-  context.actorSelection(painterRef) ! PaintObj(getBodiesDetailsList())
-  val forceCalculator = context.actorOf(Props(new ForceCalculator(bodiesNumber)), "forceCalculator")
+  context.actorSelection(painter) ! PaintObj(getBodiesDetailsList())
 
   /**
    * TODO: Implement

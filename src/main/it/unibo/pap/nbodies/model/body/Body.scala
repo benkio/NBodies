@@ -17,8 +17,9 @@ import akka.pattern._
 import akka.actor.Props
 import akka.util.Timeout
 import it.unibo.pap.nbodies.model.force.ForceCalculator
+import akka.actor.ActorPath
 
-class Body(forceCalculatorActorRef: ActorRef) extends Actor {
+class Body(forceCalculatorActorPath: ActorPath) extends Actor {
   implicit val ec = Implicit.ec
   implicit lazy val timeout = Implicit.timeout
   var mass = Random.nextDouble() * 10
@@ -36,9 +37,12 @@ class Body(forceCalculatorActorRef: ActorRef) extends Actor {
     case Stop => println("Body: Stop Event")
     case OneStep(deltaTime) => {
       println("Body: One Step with " ++ deltaTime.toString() ++ " deltaTime")
-      force = Await.result(ask(forceCalculatorActorRef, CalculateForce(coordinate, mass)), timeout.duration).asInstanceOf[Point2D.Double]
+      var forceCalculatorRef = context.system.actorSelection(forceCalculatorActorPath)
+      forceCalculatorRef ! CalculateForce(coordinate, mass)
+    }
+    case Force(newForce) => {
       println("Body new force calculate of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
-
+      force = newForce
     }
   }
 }

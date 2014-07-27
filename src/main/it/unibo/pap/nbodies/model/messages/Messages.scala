@@ -32,4 +32,10 @@ object Messages {
    */
   case class CalculateForce(coordinate: Point2D.Double, mass: Double) extends Request
   case object CanCalculate extends Request
+
+  trait Response
+  /**
+   * Response of Force Calculator
+   */
+  case class Force(force: Point2D.Double)
 }

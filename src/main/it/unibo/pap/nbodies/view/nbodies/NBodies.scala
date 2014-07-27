@@ -40,8 +40,8 @@ object NBodies extends Frame {
 
     var actorSystem = ActorSystem("actorSystem")
     var painter = actorSystem.actorOf(Props(new Painter(canvas)), "Painter")
-    actorSystem.actorOf(Props(new ForceCalculator(bodiesNumber)), "forceCalculator")
-    var mainController = actorSystem.actorOf(Props(new MainController(bodiesNumber, deltaTime, painter.path)), "mainController")
+    var forceCalculator = actorSystem.actorOf(Props(new ForceCalculator(bodiesNumber)), "forceCalculator")
+    var mainController = actorSystem.actorOf(Props(new MainController(bodiesNumber, deltaTime, painter.path, forceCalculator.path)), "mainController")
 
     contents = new BoxPanel(Orientation.Vertical) {
       border = Swing.EmptyBorder(10, 20, 10, 20)

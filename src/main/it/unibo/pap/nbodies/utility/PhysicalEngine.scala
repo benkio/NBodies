@@ -9,8 +9,9 @@ object PhysicalEngine {
   /**
    * Calculates the force between two bodies
    */
-  def getForce(ma: Double, pa:Point2D.Double, mb: Double, pb:Point2D.Double): Double = {
-    g * ma * mb / math.pow(getDistance(pa, pb), 2)
+  def getForce(ma: Double, pa:Point2D.Double, mb: Double, pb:Point2D.Double): Point2D.Double = {
+    val module = g * ma * mb / math.pow(getDistance(pa, pb), 2)
+    new Point2D.Double(math.sin(module), math.cos(module))
   }
 
   /**

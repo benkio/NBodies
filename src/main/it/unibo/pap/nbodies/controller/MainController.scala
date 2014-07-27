@@ -22,7 +22,8 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath) exte
   val painterRef = painter
   var bodies = List[ActorRef]()
   var i = 0
-  createAndPaintBodies()
+  createBodies(initialBodiesNumber)
+  context.actorSelection(painterRef) ! PaintObj(getBodiesDetailsList())
 
   def removeBody(body: ActorRef) = {
     val (left, right) = bodies.span(_ != body)
@@ -33,30 +34,41 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath) exte
    */
   override def receive = {
     case StartSimultation(deltaTime) => {
-      println("Start Button Pressed")
+      println("MainController: Start Button Pressed")
       currentDeltaTime = deltaTime
     }
-    case Stop => println("Stop Button Pressed")
-    case Reset => println("Reset Button Pressed")
+    case Stop => {
+      println("MainController: Stop Button Pressed")
+      bodies.foreach(body => body ! Stop)
+    }
+    case Reset => println("MainController: Reset Button Pressed")
     case OneStep(deltaTime) => {
-      println("One Step Button Pressed")
+      println("MainController: One Step Button Pressed")
       currentDeltaTime = deltaTime
+      bodies.foreach(body => body ! OneStep(deltaTime))
     }
   }
 
-  private def createAndPaintBodies() = {
-    var bodyDetailsList = List[(Point2D, Double)]()
-    for (i <- 1 to bodiesNumber) {
-      var body = context.actorOf(Props[Body])
-      val bodyDetailsFuture = for {
-        a <- ask(body, GetXCoordinate).mapTo[Double]
-        b <- ask(body, GetYCoordinate).mapTo[Double]
-        c <- ask(body, GetRadius).mapTo[Double]
-      } yield (new Point2D.Double(a, b), c)
+  private def createBodies(bodiesNumber: Int) = {
+    for (i <- 1 to bodiesNumber)
+      bodies ::= context.actorOf(Props[Body])
+  }
 
-      bodyDetailsList ::= Await.result(bodyDetailsFuture, timeout.duration)
-      context.actorSelection(painterRef) ! PaintObj(bodyDetailsList)
-      bodies ::= body
-    }
+  private def getBodyDetailsFuture(body: ActorRef) = {
+    val bodyDetailsFuture = for {
+      a <- ask(body, GetXCoordinate).mapTo[Double]
+      b <- ask(body, GetYCoordinate).mapTo[Double]
+      c <- ask(body, GetRadius).mapTo[Double]
+    } yield (new Point2D.Double(a, b), c)
+
+    bodyDetailsFuture
+  }
+
+  private def getBodiesDetailsList(): List[(Point2D, Double)] = {
+    var bodyDetailsList = List[(Point2D, Double)]()
+    bodies.foreach(body => {
+      bodyDetailsList ::= Await.result(getBodyDetailsFuture(body), timeout.duration)
+    })
+    bodyDetailsList
   }
 }

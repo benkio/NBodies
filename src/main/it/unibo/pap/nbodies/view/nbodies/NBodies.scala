@@ -31,6 +31,7 @@ object NBodies extends Frame {
 
     val deltaTimeTextField = new JSpinner()
     deltaTimeTextField.setModel(new javax.swing.SpinnerNumberModel(0, 0, 1000000000, 1))
+    deltaTimeTextField.setValue(deltaTime)
     val deltaTimeSpinnerWrapped = Component.wrap(deltaTimeTextField)
     val canvas = new NBodiesCanvas() {
       preferredSize = new Dimension(1200, 600)

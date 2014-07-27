@@ -19,5 +19,7 @@ class Body() extends Actor {
     case GetXCoordinate => sender() ! coordinate.getX()
     case GetYCoordinate => sender() ! coordinate.getY()
     case GetRadius => sender ! radius()
+    case Stop => println("Body: Stop Event")
+    case OneStep(deltaTime) => println("Body: One Step with " ++ deltaTime.toString() ++ " deltaime")
   }
 }

@@ -17,6 +17,7 @@ import javax.swing.JSpinner
 import scala.swing.event.ValueChanged
 import it.unibo.pap.nbodies.controller._
 import it.unibo.pap.nbodies.model.messages.Messages._
+import it.unibo.pap.nbodies.model.force.ForceCalculator
 
 /**
  * @author enricobenini
@@ -39,6 +40,7 @@ object NBodies extends Frame {
 
     var actorSystem = ActorSystem("actorSystem")
     var painter = actorSystem.actorOf(Props(new Painter(canvas)), "Painter")
+    actorSystem.actorOf(Props(new ForceCalculator(bodiesNumber)), "forceCalculator")
     var mainController = actorSystem.actorOf(Props(new MainController(bodiesNumber, deltaTime, painter.path)), "mainController")
 
     contents = new BoxPanel(Orientation.Vertical) {

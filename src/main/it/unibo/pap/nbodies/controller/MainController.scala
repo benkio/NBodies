@@ -12,17 +12,20 @@ import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
 import scala.concurrent._
 import it.unibo.pap.nbodies.model.messages.Messages._
+import it.unibo.pap.nbodies.model.force.ForceCalculator
+import main.it.unibo.pap.nbodies.controller.Implicit
 
 class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath) extends Actor {
-  implicit val ec = ExecutionContext.Implicits.global
-  implicit lazy val timeout = Timeout(5000)
-
-  val initialBodiesNumber = bodiesNumber
+  implicit val ec = Implicit.ec
+  implicit lazy val timeout = Implicit.timeout
+  var currentBodiesNumber = bodiesNumber
   var currentDeltaTime = deltaTime
   val painterRef = painter
   var i = 0
-  createBodies(initialBodiesNumber)
+  createBodies(bodiesNumber)
   context.actorSelection(painterRef) ! PaintObj(getBodiesDetailsList())
+  val forceCalculator = context.actorOf(Props(new ForceCalculator(bodiesNumber)), "forceCalculator")
+
   /**
    * TODO: Implement
    */
@@ -44,7 +47,7 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath) exte
   }
 
   private def createBodies(bodiesNumber: Int) = {
-    for (i <- 1 to bodiesNumber) context.actorOf(Props[Body])
+    for (i <- 1 to bodiesNumber) context.actorOf(Props(new Body(forceCalculator)))
   }
 
   private def getBodyDetailsFuture(body: ActorRef) = {

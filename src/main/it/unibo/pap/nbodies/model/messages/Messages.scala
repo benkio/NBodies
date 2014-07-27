@@ -20,10 +20,16 @@ object Messages {
   case object GetRadius extends Request
 
   /**
-   * GUI Messages to MainController
+   * Main messages of the application
    */
   case class StartSimultation(deltaTime: Int) extends Request
   case class OneStep(deltaTime: Int) extends Request
   case object Stop extends Request
   case object Reset extends Request
+
+  /**
+   * Messages to the ForceCalculator
+   */
+  case class CalculateForce(coordinate: Point2D, mass: Double) extends Request
+  case object CanCalculate extends Request
 }

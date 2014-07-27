@@ -11,28 +11,26 @@ import akka.actor.Terminated
 
 class ForceCalculator(bodiesNumber: Int) extends Actor {
   // ActorRef to reply, Coordinate, mass, force to calculate
-  var bodiesDetails = List[(ActorRef, Point2D, Double, Point2D)]()
+  var bodiesDetails = List[(ActorRef, Point2D.Double, Double, Point2D.Double)]()
 
   override def receive = {
     case CalculateForce(coordinate, mass) => {
-      bodiesDetails.::((sender(), coordinate, mass, compute()))
+      bodiesDetails.::((sender(), coordinate, mass, compute(coordinate, mass)))
       if (bodiesDetails.length == bodiesNumber) {
         bodiesDetails.foreach(body => { body._1 ! body._4 })
         context stop self
       }
     }
   }
-  private def compute() {
+  private def compute(coordinate: Point2D.Double, mass: Double) {
     var newBodyForce = new Point2D.Double(0, 0)
     bodiesDetails.foreach(body => {
-      /*	
-         * val force = PhysicalEngine(...)
-         * newBodyForce.getX() += force.getX()
-         * newBodyForce.getY() += force.getY()
-         * body._4.getX() -= force.getX()
-         * body._4.getY() -= force.getY()
-         * 
-         */
+      val force = PhysicalEngine.getForce(mass, coordinate, body._3, body._2)
+      newBodyForce.x += force.
+        newBodyForce.getY() += force.getY()
+      body._4.getX() -= force.getX()
+      body._4.getY() -= force.getY()
+
     })
     newBodyForce
   }

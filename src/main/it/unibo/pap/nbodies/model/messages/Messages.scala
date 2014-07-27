@@ -30,6 +30,6 @@ object Messages {
   /**
    * Messages to the ForceCalculator
    */
-  case class CalculateForce(coordinate: Point2D, mass: Double) extends Request
+  case class CalculateForce(coordinate: Point2D.Double, mass: Double) extends Request
   case object CanCalculate extends Request
 }

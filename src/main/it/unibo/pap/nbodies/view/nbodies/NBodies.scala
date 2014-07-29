@@ -17,6 +17,7 @@ import javax.swing.JSpinner
 import scala.swing.event.ValueChanged
 import it.unibo.pap.nbodies.controller._
 import it.unibo.pap.nbodies.model.messages.Messages._
+import it.unibo.pap.nbodies.model.force.ForceCalculator
 
 /**
  * @author enricobenini
@@ -39,13 +40,20 @@ object NBodies extends Frame {
 
     var actorSystem = ActorSystem("actorSystem")
     var painter = actorSystem.actorOf(Props(new Painter(canvas)), "Painter")
-    var mainController = actorSystem.actorOf(Props(new MainController(bodiesNumber, deltaTime, painter.path)), "mainController")
+    var forceCalculator = actorSystem.actorOf(Props(new ForceCalculator(bodiesNumber)), "forceCalculator")
+    var mainController = actorSystem.actorOf(Props(new MainController(bodiesNumber, deltaTime, painter.path, forceCalculator.path)), "mainController")
 
     contents = new BoxPanel(Orientation.Vertical) {
       border = Swing.EmptyBorder(10, 20, 10, 20)
       contents += new BoxPanel(Orientation.Horizontal) {
-        contents += Button("Start")(mainController ! StartSimultation(deltaTimeTextField.getValue().asInstanceOf[Int]))
-        contents += Button("One Step")(mainController ! OneStep(deltaTimeTextField.getValue().asInstanceOf[Int]))
+        contents += Button("Start")({
+          forceCalculator ! StartSimultation
+          mainController ! StartSimultation(deltaTimeTextField.getValue().asInstanceOf[Int])
+        })
+        contents += Button("One Step")({
+          forceCalculator ! StartSimultation
+          mainController ! OneStep(deltaTimeTextField.getValue().asInstanceOf[Int])
+        })
         contents += Button("Stop")(mainController ! Stop)
         contents += Button("Reset")(mainController ! Reset)
         contents += deltaTimeSpinnerWrapped

@@ -23,10 +23,12 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
 
   implicit val ec = Implicit.ec
   implicit lazy val timeout = Implicit.timeout
+  var currentDeltaTime = 0
   var mass = Random.nextDouble() * 10
   var radius = () => mass
   var coordinate = new Point2D.Double(10 + Random.nextDouble() * 1180, 10 + Random.nextDouble() * 580)
   var force = new Point2D.Double(0, 0)
+  var velocity = new Point2D.Double(0, 0)
   val forceCalculatorRef = context.system.actorSelection(forceCalculatorActorPath)
 
   /**
@@ -42,6 +44,7 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
     }
     case OneStep(deltaTime) => {
       println("Body: One Step with " ++ deltaTime.toString() ++ " deltaTime")
+      currentDeltaTime = deltaTime
       forceCalculatorRef ! CalculateForce(coordinate, mass)
     }
     case Force(newForce) => {
@@ -62,4 +65,11 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
     case _ => unhandled()
   }
 
+  private def computeNewPosition() {
+    velocity.x += currentDeltaTime * force.getX()
+    velocity.y += currentDeltaTime * force.getY()
+
+    coordinate.x += velocity.getX() * currentDeltaTime + (math.pow(currentDeltaTime, 2) / 2) * force.getX()
+    coordinate.x += velocity.getY() * currentDeltaTime + (math.pow(currentDeltaTime, 2) / 2) * force.getY()
+  }
 }

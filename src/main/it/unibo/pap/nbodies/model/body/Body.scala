@@ -20,6 +20,7 @@ import it.unibo.pap.nbodies.model.force.ForceCalculator
 import akka.actor.ActorPath
 
 class Body(forceCalculatorActorPath: ActorPath) extends Actor {
+
   implicit val ec = Implicit.ec
   implicit lazy val timeout = Implicit.timeout
   var mass = Random.nextDouble() * 10
@@ -34,15 +35,34 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
     case GetXCoordinate => sender() ! coordinate.getX()
     case GetYCoordinate => sender() ! coordinate.getY()
     case GetRadius => sender ! radius()
-    case Stop => println("Body: Stop Event")
+    case Stop => {
+      println("Body: Stop Event")
+      context.become(StopMode)
+    }
     case OneStep(deltaTime) => {
       println("Body: One Step with " ++ deltaTime.toString() ++ " deltaTime")
-      var forceCalculatorRef = context.system.actorSelection(forceCalculatorActorPath)
-      forceCalculatorRef ! CalculateForce(coordinate, mass)
+      doStep();
     }
     case Force(newForce) => {
       force = newForce
       println("Body(" ++ coordinate.getX().toString() ++ ", " ++ coordinate.getY().toString() ++ ") new force calculate of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
     }
+  }
+
+  def StopMode: Receive = {
+    case OneStep(deltaTime) => {
+      context.unbecome();
+      self forward OneStep(deltaTime)
+    }
+    case StartSimultation => {
+      context.unbecome();
+      self forward StartSimultation
+    }
+    case _ => unhandled()
+  }
+
+  private def doStep() {
+    var forceCalculatorRef = context.system.actorSelection(forceCalculatorActorPath)
+    forceCalculatorRef ! CalculateForce(coordinate, mass)
   }
 }

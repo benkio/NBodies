@@ -22,6 +22,7 @@ class ForceCalculator(bodiesNumber: Int) extends Actor {
         bodiesDetails = new ListBuffer[(ActorRef, Point2D.Double, Double, Point2D.Double)]()
       }
     }
+    //TODO: Manage the stop message. 
   }
   private def compute(coordinate: Point2D.Double, mass: Double): Point2D.Double = {
     var newBodyForce = new Point2D.Double(0, 0)

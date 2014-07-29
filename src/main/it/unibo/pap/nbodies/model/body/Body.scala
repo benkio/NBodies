@@ -27,6 +27,7 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
   var radius = () => mass
   var coordinate = new Point2D.Double(10 + Random.nextDouble() * 1180, 10 + Random.nextDouble() * 580)
   var force = new Point2D.Double(0, 0)
+  val forceCalculatorRef = context.system.actorSelection(forceCalculatorActorPath)
 
   /**
    * TODO: Implement the receive for the body
@@ -41,7 +42,7 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
     }
     case OneStep(deltaTime) => {
       println("Body: One Step with " ++ deltaTime.toString() ++ " deltaTime")
-      doStep();
+      forceCalculatorRef ! CalculateForce(coordinate, mass)
     }
     case Force(newForce) => {
       force = newForce
@@ -54,15 +55,11 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
       context.unbecome();
       self forward OneStep(deltaTime)
     }
-    case StartSimultation => {
+    case StartSimultation(deltaTime) => {
       context.unbecome();
-      self forward StartSimultation
+      self forward StartSimultation(deltaTime)
     }
     case _ => unhandled()
   }
 
-  private def doStep() {
-    var forceCalculatorRef = context.system.actorSelection(forceCalculatorActorPath)
-    forceCalculatorRef ! CalculateForce(coordinate, mass)
-  }
 }

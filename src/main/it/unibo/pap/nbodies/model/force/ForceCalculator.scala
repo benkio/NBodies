@@ -3,10 +3,9 @@ package it.unibo.pap.nbodies.model.force
 import akka.actor.Actor
 import java.awt.geom.Point2D
 import akka.actor.Props
-import it.unibo.pap.nbodies.model.messages.Messages.CalculateForce
 import it.unibo.pap.nbodies.utility.PhysicalEngine
 import akka.actor._
-import it.unibo.pap.nbodies.model.messages.Messages.Force
+import it.unibo.pap.nbodies.model.messages.Messages._
 import scala.collection.mutable.ListBuffer
 
 class ForceCalculator(bodiesNumber: Int) extends Actor {
@@ -14,15 +13,26 @@ class ForceCalculator(bodiesNumber: Int) extends Actor {
   var bodiesDetails = new ListBuffer[(ActorRef, Point2D.Double, Double, Point2D.Double)]()
 
   override def receive = {
-    case CalculateForce(coordinate, mass) => {
-      val force = compute(coordinate, mass)
-      bodiesDetails.append((sender(), coordinate, mass, force))
-      if (bodiesDetails.length == bodiesNumber) {
-        bodiesDetails.foreach(body => { body._1 ! Force(body._4) })
-        bodiesDetails = new ListBuffer[(ActorRef, Point2D.Double, Double, Point2D.Double)]()
-      }
+    case StartSimultation => context.become(Ready)
+    case _ => {
+      println("message refused")
+      unhandled()
     }
-    //TODO: Manage the stop message. 
+  }
+
+  def Ready: Receive = {
+    case CalculateForce(coordinate, mass) => {
+      if (bodiesDetails.length < bodiesNumber) {
+        val force = compute(coordinate, mass)
+        bodiesDetails.append((sender(), coordinate, mass, force))
+        if (bodiesDetails.length == bodiesNumber) self ! sendForcesResults
+      } else unhandled(CalculateForce)
+    }
+    case Stop => context unbecome
+    case sendForcesResults => {
+      bodiesDetails.foreach(body => { body._1 ! Force(body._4) })
+      bodiesDetails.clear()
+    }
   }
   private def compute(coordinate: Point2D.Double, mass: Double): Point2D.Double = {
     var newBodyForce = new Point2D.Double(0, 0)

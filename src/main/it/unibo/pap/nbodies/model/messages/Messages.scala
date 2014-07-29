@@ -5,6 +5,7 @@ import java.awt.geom.Point2D
 
 object Messages {
 
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~Requests~~~~~~~~~~~~~~~~~
   trait Request
 
   /**
@@ -33,9 +34,24 @@ object Messages {
   case class CalculateForce(coordinate: Point2D.Double, mass: Double) extends Request
   case object CanCalculate extends Request
 
+  //~~~~~~~~~~~~~~~~~~~~~~~~~~~Response~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   trait Response
   /**
    * Response of Force Calculator
    */
-  case class Force(force: Point2D.Double)
+  case class Force(force: Point2D.Double) extends Response
+
+  //~~~~~~~~~~~~~~~~~~~~~~~Internal Messages~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  /**
+   * Internal Force Calculator Message
+   */
+  case object sendForcesResults
+
+  /**
+   * Internal body Message
+   */
+  case object UpdateForce
+
 }

@@ -46,8 +46,14 @@ object NBodies extends Frame {
     contents = new BoxPanel(Orientation.Vertical) {
       border = Swing.EmptyBorder(10, 20, 10, 20)
       contents += new BoxPanel(Orientation.Horizontal) {
-        contents += Button("Start")(mainController ! StartSimultation(deltaTimeTextField.getValue().asInstanceOf[Int]))
-        contents += Button("One Step")(mainController ! OneStep(deltaTimeTextField.getValue().asInstanceOf[Int]))
+        contents += Button("Start")({
+          forceCalculator ! StartSimultation
+          mainController ! StartSimultation(deltaTimeTextField.getValue().asInstanceOf[Int])
+        })
+        contents += Button("One Step")({
+          forceCalculator ! StartSimultation
+          mainController ! OneStep(deltaTimeTextField.getValue().asInstanceOf[Int])
+        })
         contents += Button("Stop")(mainController ! Stop)
         contents += Button("Reset")(mainController ! Reset)
         contents += deltaTimeSpinnerWrapped

@@ -18,17 +18,19 @@ import akka.actor.Props
 import akka.util.Timeout
 import it.unibo.pap.nbodies.model.force.ForceCalculator
 import akka.actor.ActorPath
+import main.it.unibo.pap.nbodies.view.ViewConstants
+import main.it.unibo.pap.nbodies.model.ModelConstants
 
 class Body(forceCalculatorActorPath: ActorPath) extends Actor {
 
   implicit val ec = Implicit.ec
   implicit lazy val timeout = Implicit.timeout
   var currentDeltaTime = 0
-  var mass = Random.nextDouble() * 100
-  var radius = () => mass / 10
-  var coordinate = new Point2D.Double(10 + Random.nextDouble() * 1180, 10 + Random.nextDouble() * 580)
-  var force = new Point2D.Double(0, 0)
-  var velocity = new Point2D.Double(0, 0)
+  var mass = Random.nextDouble() * ModelConstants.massMultiplier
+  var radius = () => mass / ModelConstants.radiusDivider
+  var coordinate = new Point2D.Double(10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getWidth() - 20), 10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getHeight() - 20))
+  var force = ModelConstants.initialForce
+  var velocity = ModelConstants.initialVelocity
   val forceCalculatorRef = context.system.actorSelection(forceCalculatorActorPath)
 
   /**
@@ -80,10 +82,27 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
 
     velocity.x += currentDeltaTime * (force.getX() / mass)
     velocity.y += currentDeltaTime * (force.getY() / mass)
+
+    if (coordinate.getX() > ViewConstants.CanvasDimension.getWidth()) {
+      coordinate.x = ViewConstants.CanvasDimension.getWidth() - 10
+      velocity.x = (-velocity.x)
+    }
+    if (coordinate.getY() > ViewConstants.CanvasDimension.getHeight()) {
+      coordinate.y = ViewConstants.CanvasDimension.getHeight() - 10
+      velocity.y = (-velocity.y)
+    }
+    if (coordinate.getX() < 0) {
+      coordinate.x = 10
+      velocity.x = (-velocity.x)
+    }
+    if (coordinate.getY() < 0) {
+      coordinate.y = 10
+      velocity.y = (-velocity.y)
+    }
   }
 
   private def resetInternalValues() {
-    mass = Random.nextDouble() * 100
-    coordinate = new Point2D.Double(10 + Random.nextDouble() * 1180, 10 + Random.nextDouble() * 580)
+    mass = Random.nextDouble() * ModelConstants.massMultiplier
+    coordinate = new Point2D.Double(10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getWidth() - 20), 10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getHeight() - 20))
   }
 }

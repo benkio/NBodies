@@ -22,7 +22,6 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
   var currentBodiesNumber = bodiesNumber
   var currentDeltaTime = deltaTime
   var bodiesPositionUpdated = ListBuffer[(Point2D, Double)]()
-  var i = 0
   createBodies(bodiesNumber)
   context.actorSelection(painter) ! PaintObj(getBodiesDetailsList().to[ListBuffer])
 
@@ -33,6 +32,7 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
     case StartSimultation(deltaTime) => {
       println("MainController: Start Button Pressed")
       currentDeltaTime = deltaTime
+      self ! OneStep(deltaTime)
     }
     case Stop => {
       println("MainController: Stop Button Pressed")
@@ -43,12 +43,12 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
       context.children.foreach(body => body ! Reset)
     }
     case OneStep(deltaTime) => {
-      bodiesPositionUpdated.clear()
-      println("MainController: One Step Button Pressed")
       currentDeltaTime = deltaTime
+      println("MainController: One Step Button Pressed")
       context.children.foreach(body => body ! OneStep(deltaTime))
     }
     case PositionUpdated(bodyDetail) => {
+      if (bodiesPositionUpdated.length == bodiesNumber) bodiesPositionUpdated.clear()
       bodiesPositionUpdated.append(bodyDetail)
       if (bodiesPositionUpdated.length == bodiesNumber) {
         context.actorSelection(painter) ! PaintObj(bodiesPositionUpdated)

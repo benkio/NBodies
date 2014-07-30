@@ -30,6 +30,7 @@ class ForceCalculator(bodiesNumber: Int) extends Actor {
       } else unhandled(CalculateForce)
     }
     case Stop => context unbecome
+    case Reset => context unbecome
     case sendForcesResults => {
       bodiesDetails.foreach(body => { body._1 ! Force(body._4) })
       bodiesDetails.clear()

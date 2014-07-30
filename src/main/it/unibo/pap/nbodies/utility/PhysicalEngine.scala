@@ -10,7 +10,7 @@ object PhysicalEngine {
    * Calculates the force between two bodies
    */
   def getForce(ma: Double, pa: Point2D.Double, mb: Double, pb: Point2D.Double): Point2D.Double = {
-    val distance = getDistance(pa, pb)
+    val distance = if (getDistance(pa, pb) != 0) getDistance(pa, pb) else 1
     val module = g * ma * mb / math.pow(distance, 2)
     val cosAngle = (pb.getX() - pa.getX()) / distance
     val senAngle = (pb.getY() - pa.getY()) / distance

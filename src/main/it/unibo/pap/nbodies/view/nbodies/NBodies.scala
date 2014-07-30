@@ -18,6 +18,7 @@ import scala.swing.event.ValueChanged
 import it.unibo.pap.nbodies.controller._
 import it.unibo.pap.nbodies.model.messages.Messages._
 import it.unibo.pap.nbodies.model.force.ForceCalculator
+import main.it.unibo.pap.nbodies.view.ViewConstants
 
 /**
  * @author enricobenini
@@ -27,7 +28,7 @@ object NBodies extends Frame {
   def startNBodies(bodiesNumber: Int, deltaTime: Int) = new Frame {
     visible = true
     title = "NBodies Frame"
-    size = new Dimension(1400, 800)
+    size = ViewConstants.FrameDimension
     peer.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE)
 
     val deltaTimeTextField = new JSpinner()
@@ -35,7 +36,7 @@ object NBodies extends Frame {
     deltaTimeTextField.setValue(deltaTime)
     val deltaTimeSpinnerWrapped = Component.wrap(deltaTimeTextField)
     val canvas = new NBodiesCanvas() {
-      preferredSize = new Dimension(1200, 600)
+      preferredSize = ViewConstants.CanvasDimension
     }
 
     var actorSystem = ActorSystem("actorSystem")
@@ -54,8 +55,14 @@ object NBodies extends Frame {
           forceCalculator ! OneStep
           mainController ! OneStep(deltaTimeTextField.getValue().asInstanceOf[Int])
         })
-        contents += Button("Stop")(mainController ! Stop)
-        contents += Button("Reset")(mainController ! Reset)
+        contents += Button("Stop")({
+          forceCalculator ! Stop
+          mainController ! Stop
+        })
+        contents += Button("Reset")({
+          forceCalculator ! Reset
+          mainController ! Reset
+        })
         contents += deltaTimeSpinnerWrapped
       }
 

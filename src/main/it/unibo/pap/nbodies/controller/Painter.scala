@@ -18,8 +18,7 @@ class Painter(viewCanvas: NBodiesCanvas) extends Actor {
    */
   override def receive = {
     case PaintObj(bodiesDetails) => {
-      canvas.setBodiesDetails(bodiesDetails)
-      canvas.repaint();
+      canvas.setBodiesDetailsAndPaint(bodiesDetails)
     }
   }
 }

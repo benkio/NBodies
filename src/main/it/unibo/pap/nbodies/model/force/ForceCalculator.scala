@@ -14,6 +14,7 @@ class ForceCalculator(bodiesNumber: Int) extends Actor {
 
   override def receive = {
     case StartSimultation => context.become(Ready)
+    case OneStep => context.become(Ready)
     case _ => {
       println("message refused")
       unhandled()
@@ -38,10 +39,10 @@ class ForceCalculator(bodiesNumber: Int) extends Actor {
     var newBodyForce = new Point2D.Double(0, 0)
     bodiesDetails.foreach(body => {
       val force = PhysicalEngine.getForce(mass, coordinate, body._3, body._2)
-      newBodyForce.x += force.getX()
-      newBodyForce.y += force.getY()
-      body._4.x -= force.getX()
-      body._4.y -= force.getY()
+      newBodyForce.x -= force.getX()
+      newBodyForce.y -= force.getY()
+      body._4.x += force.getX()
+      body._4.y += force.getY()
     })
     newBodyForce
   }

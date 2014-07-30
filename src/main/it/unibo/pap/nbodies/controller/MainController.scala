@@ -14,15 +14,17 @@ import scala.concurrent._
 import it.unibo.pap.nbodies.model.messages.Messages._
 import it.unibo.pap.nbodies.model.force.ForceCalculator
 import main.it.unibo.pap.nbodies.controller.Implicit
+import scala.collection.mutable.ListBuffer
 
 class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forceCalculator: ActorPath) extends Actor {
   implicit val ec = Implicit.ec
   implicit lazy val timeout = Implicit.timeout
   var currentBodiesNumber = bodiesNumber
   var currentDeltaTime = deltaTime
+  var bodiesPositionUpdated = ListBuffer[(Point2D, Double)]()
   var i = 0
   createBodies(bodiesNumber)
-  context.actorSelection(painter) ! PaintObj(getBodiesDetailsList())
+  context.actorSelection(painter) ! PaintObj(getBodiesDetailsList().to[ListBuffer])
 
   /**
    * TODO: Implement
@@ -38,9 +40,16 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
     }
     case Reset => println("MainController: Reset Button Pressed")
     case OneStep(deltaTime) => {
+      bodiesPositionUpdated.clear()
       println("MainController: One Step Button Pressed")
       currentDeltaTime = deltaTime
       context.children.foreach(body => body ! OneStep(deltaTime))
+    }
+    case PositionUpdated(bodyDetail) => {
+      bodiesPositionUpdated.append(bodyDetail)
+      if (bodiesPositionUpdated.length == bodiesNumber) {
+        context.actorSelection(painter) ! PaintObj(bodiesPositionUpdated)
+      }
     }
   }
 

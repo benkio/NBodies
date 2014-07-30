@@ -50,6 +50,9 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
     case Force(newForce) => {
       force = newForce
       println("Body(" ++ coordinate.getX().toString() ++ ", " ++ coordinate.getY().toString() ++ ") new force calculate of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
+      computeNewPosition()
+      println("New Position Body(" ++ coordinate.getX().toString() ++ ", " ++ coordinate.getY().toString() ++ ") ")
+      context.parent.tell(PositionUpdated((coordinate, mass)), self)
     }
   }
 
@@ -66,10 +69,10 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
   }
 
   private def computeNewPosition() {
-    velocity.x += currentDeltaTime * force.getX()
-    velocity.y += currentDeltaTime * force.getY()
-
     coordinate.x += velocity.getX() * currentDeltaTime + (math.pow(currentDeltaTime, 2) / 2) * force.getX()
     coordinate.x += velocity.getY() * currentDeltaTime + (math.pow(currentDeltaTime, 2) / 2) * force.getY()
+
+    velocity.x += currentDeltaTime * force.getX()
+    velocity.y += currentDeltaTime * force.getY()
   }
 }

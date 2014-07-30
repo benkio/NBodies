@@ -51,7 +51,7 @@ object NBodies extends Frame {
           mainController ! StartSimultation(deltaTimeTextField.getValue().asInstanceOf[Int])
         })
         contents += Button("One Step")({
-          forceCalculator ! StartSimultation
+          forceCalculator ! OneStep
           mainController ! OneStep(deltaTimeTextField.getValue().asInstanceOf[Int])
         })
         contents += Button("Stop")(mainController ! Stop)

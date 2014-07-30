@@ -2,6 +2,7 @@ package it.unibo.pap.nbodies.model.messages
 
 import akka.actor.ActorRef
 import java.awt.geom.Point2D
+import scala.collection.mutable.ListBuffer
 
 object Messages {
 
@@ -11,7 +12,7 @@ object Messages {
   /**
    * Message for ask to painter to repaint the frame with passed coordinates and radius
    */
-  case class PaintObj(bodiesList: List[(Point2D, Double)]) extends Request
+  case class PaintObj(bodiesList: ListBuffer[(Point2D, Double)]) extends Request
 
   /**
    * Basic body request for details
@@ -42,6 +43,10 @@ object Messages {
    */
   case class Force(force: Point2D.Double) extends Response
 
+  /**
+   * Response of bodies
+   */
+  case class PositionUpdated(bodyDetail: (Point2D.Double, Double))
   //~~~~~~~~~~~~~~~~~~~~~~~Internal Messages~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   /**

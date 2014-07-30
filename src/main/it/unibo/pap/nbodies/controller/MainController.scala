@@ -38,7 +38,10 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
       println("MainController: Stop Button Pressed")
       context.children.foreach(body => body ! Stop)
     }
-    case Reset => println("MainController: Reset Button Pressed")
+    case Reset => {
+      println("MainController: Reset Button Pressed")
+      context.children.foreach(body => body ! Reset)
+    }
     case OneStep(deltaTime) => {
       bodiesPositionUpdated.clear()
       println("MainController: One Step Button Pressed")

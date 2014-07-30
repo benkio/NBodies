@@ -24,8 +24,8 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
   implicit val ec = Implicit.ec
   implicit lazy val timeout = Implicit.timeout
   var currentDeltaTime = 0
-  var mass = Random.nextDouble() * 500
-  var radius = () => mass / 100
+  var mass = Random.nextDouble() * 100
+  var radius = () => mass / 10
   var coordinate = new Point2D.Double(10 + Random.nextDouble() * 1180, 10 + Random.nextDouble() * 580)
   var force = new Point2D.Double(0, 0)
   var velocity = new Point2D.Double(0, 0)
@@ -41,6 +41,12 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
     case Stop => {
       println("Body: Stop Event")
       context.become(StopMode)
+    }
+    case Reset => {
+      println("Body: Reset Event")
+      resetInternalValues()
+      context.become(StopMode)
+      context.parent.tell(PositionUpdated((coordinate, radius())), self)
     }
     case OneStep(deltaTime) => {
       println("Body: One Step with " ++ deltaTime.toString() ++ " deltaTime")
@@ -74,5 +80,10 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
 
     velocity.x += currentDeltaTime * (force.getX() / mass)
     velocity.y += currentDeltaTime * (force.getY() / mass)
+  }
+
+  private def resetInternalValues() {
+    mass = Random.nextDouble() * 100
+    coordinate = new Point2D.Double(10 + Random.nextDouble() * 1180, 10 + Random.nextDouble() * 580)
   }
 }

@@ -9,9 +9,12 @@ object PhysicalEngine {
   /**
    * Calculates the force between two bodies
    */
-  def getForce(ma: Double, pa:Point2D.Double, mb: Double, pb:Point2D.Double): Point2D.Double = {
-    val module = g * ma * mb / math.pow(getDistance(pa, pb), 2)
-    new Point2D.Double(math.sin(module), math.cos(module))
+  def getForce(ma: Double, pa: Point2D.Double, mb: Double, pb: Point2D.Double): Point2D.Double = {
+    val distance = getDistance(pa, pb)
+    val module = g * ma * mb / math.pow(distance, 2)
+    val cosAngle = (pb.getX() - pa.getX()) / distance
+    val senAngle = (pb.getY() - pa.getY()) / distance
+    new Point2D.Double(module * cosAngle, module * senAngle)
   }
 
   /**
@@ -22,7 +25,7 @@ object PhysicalEngine {
       math.pow(b.getX() - a.getX(), 2) +
         math.pow(b.getY() - a.getY(), 2))
   }
-  
+
   /**
    * Calculate the escape velocity, where m is the mass and r the distance from the center of gravity
    */

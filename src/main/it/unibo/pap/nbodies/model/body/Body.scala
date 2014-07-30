@@ -24,8 +24,8 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
   implicit val ec = Implicit.ec
   implicit lazy val timeout = Implicit.timeout
   var currentDeltaTime = 0
-  var mass = Random.nextDouble() * 10
-  var radius = () => mass
+  var mass = Random.nextDouble() * 500
+  var radius = () => mass / 100
   var coordinate = new Point2D.Double(10 + Random.nextDouble() * 1180, 10 + Random.nextDouble() * 580)
   var force = new Point2D.Double(0, 0)
   var velocity = new Point2D.Double(0, 0)
@@ -52,7 +52,7 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
       println("Body(" ++ coordinate.getX().toString() ++ ", " ++ coordinate.getY().toString() ++ ") new force calculate of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
       computeNewPosition()
       println("New Position Body(" ++ coordinate.getX().toString() ++ ", " ++ coordinate.getY().toString() ++ ") ")
-      context.parent.tell(PositionUpdated((coordinate, mass)), self)
+      context.parent.tell(PositionUpdated((coordinate, radius())), self)
     }
   }
 
@@ -70,9 +70,9 @@ class Body(forceCalculatorActorPath: ActorPath) extends Actor {
 
   private def computeNewPosition() {
     coordinate.x += velocity.getX() * currentDeltaTime + (math.pow(currentDeltaTime, 2) / 2) * force.getX()
-    coordinate.x += velocity.getY() * currentDeltaTime + (math.pow(currentDeltaTime, 2) / 2) * force.getY()
+    coordinate.y += velocity.getY() * currentDeltaTime + (math.pow(currentDeltaTime, 2) / 2) * force.getY()
 
-    velocity.x += currentDeltaTime * force.getX()
-    velocity.y += currentDeltaTime * force.getY()
+    velocity.x += currentDeltaTime * (force.getX() / mass)
+    velocity.y += currentDeltaTime * (force.getY() / mass)
   }
 }

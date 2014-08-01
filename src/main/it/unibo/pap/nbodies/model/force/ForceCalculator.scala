@@ -3,10 +3,10 @@ package it.unibo.pap.nbodies.model.force
 import akka.actor.Actor
 import java.awt.geom.Point2D
 import akka.actor.Props
-import it.unibo.pap.nbodies.utility.PhysicalEngine
 import akka.actor._
 import it.unibo.pap.nbodies.model.messages.Messages._
 import scala.collection.mutable.ListBuffer
+import it.unibo.pap.nbodies.utility.PhysicalEngine
 
 class ForceCalculator(bodiesNumber: Int) extends Actor {
   // ActorRef to reply, Coordinate, mass, force to calculate

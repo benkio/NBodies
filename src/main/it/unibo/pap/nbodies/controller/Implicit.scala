@@ -1,4 +1,4 @@
-package main.it.unibo.pap.nbodies.controller
+package it.unibo.pap.nbodies.controller
 
 import scala.concurrent.ExecutionContext
 import akka.util.Timeout

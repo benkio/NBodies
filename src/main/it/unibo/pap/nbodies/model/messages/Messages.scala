@@ -3,6 +3,7 @@ package it.unibo.pap.nbodies.model.messages
 import akka.actor.ActorRef
 import java.awt.geom.Point2D
 import scala.collection.mutable.ListBuffer
+import it.unibo.pap.nbodies.model.BodyDetails
 
 object Messages {
 
@@ -10,16 +11,18 @@ object Messages {
   trait Request
 
   /**
+   * Painter Requests
+   *
    * Message for ask to painter to repaint the frame with passed coordinates and radius
+   * it replace the previous values of the body with the new one
    */
-  case class PaintObj(bodiesList: ListBuffer[(Point2D, Double)]) extends Request
+  case class PaintBody(newBodyDetails: BodyDetails) extends Request
+  case class SetBodiesDetails(list: List[(BodyDetails, ActorRef)]) extends Request
 
   /**
    * Basic body request for details
    */
-  case object GetXCoordinate extends Request
-  case object GetYCoordinate extends Request
-  case object GetRadius extends Request
+  case object GetBodyDetails extends Request
 
   /**
    * Main messages of the application
@@ -28,6 +31,7 @@ object Messages {
   case class OneStep(deltaTime: Int) extends Request
   case object Stop extends Request
   case object Reset extends Request
+  case object StepFinished extends Request
 
   /**
    * Messages to the ForceCalculator
@@ -43,10 +47,6 @@ object Messages {
    */
   case class Force(force: Point2D.Double) extends Response
 
-  /**
-   * Response of bodies
-   */
-  case class PositionUpdated(bodyDetail: (Point2D.Double, Double))
   //~~~~~~~~~~~~~~~~~~~~~~~Internal Messages~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   /**
@@ -58,5 +58,11 @@ object Messages {
    * Internal body Message
    */
   case object UpdateForce
+
+  //~~~~~~~~~~~~~~~~~~~~~~~Message From Scheduler~~~~~~~~~~~~~~~~~~~~~~~~
+  /**
+   * Called by the scheduler every x milliseconds to update the frame.
+   */
+  case object DrawFrame
 
 }

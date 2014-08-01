@@ -15,16 +15,18 @@ import javax.swing.WindowConstants
 import java.awt.geom.Point2D
 import javax.swing.JSpinner
 import scala.swing.event.ValueChanged
+import it.unibo.pap.nbodies.controller.Implicit
+import it.unibo.pap.nbodies.view.ViewConstants
 import it.unibo.pap.nbodies.controller._
-import it.unibo.pap.nbodies.model.messages.Messages._
 import it.unibo.pap.nbodies.model.force.ForceCalculator
-import main.it.unibo.pap.nbodies.view.ViewConstants
-
+import it.unibo.pap.nbodies.model.messages.Messages._
 /**
  * @author enricobenini
  *
  */
 object NBodies extends Frame {
+  implicit val ec = Implicit.ec
+  implicit lazy val timeout = Implicit.timeout
   def startNBodies(bodiesNumber: Int, deltaTime: Int) = new Frame {
     visible = true
     title = "NBodies Frame"

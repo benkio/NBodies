@@ -1,4 +1,4 @@
-package main.it.unibo.pap.nbodies.view
+package it.unibo.pap.nbodies.view
 
 import java.awt.Dimension
 

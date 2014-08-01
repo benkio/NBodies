@@ -10,10 +10,14 @@ import akka.actor.Actor
 import it.unibo.pap.nbodies.model.messages.Messages._
 import java.awt.RenderingHints
 import scala.swing.Graphics2D
+import akka.actor.ActorRef
+import scala.collection.mutable.MutableList
+import it.unibo.pap.nbodies.model.BodyDetails
+import akka.actor.ActorRef
 
 class NBodiesCanvas() extends Panel {
 
-  var bodiesDetails = ListBuffer[(Point2D, Double)]()
+  var bodiesDetails = MutableList[(BodyDetails, ActorRef)]()
 
   override def paintComponent(g: scala.swing.Graphics2D) {
     super.paintComponent(g)
@@ -21,10 +25,9 @@ class NBodiesCanvas() extends Panel {
 
     println("bodiesDetails.lenght: " ++ bodiesDetails.length.toString())
     for (bodyDetails <- bodiesDetails) {
-      println("Print " ++ bodyDetails._1.getX().toString() ++ ", " ++ bodyDetails._1.getY().toString())
-      drawCircle(g, bodyDetails._1.getX(), bodyDetails._1.getY(), bodyDetails._2)
+      println("Print " ++ bodyDetails._1.coordinate.getX().toString() ++ ", " ++ bodyDetails._1.coordinate.getY().toString())
+      drawCircle(g, bodyDetails._1.coordinate.getX(), bodyDetails._1.coordinate.getY(), bodyDetails._1.radius())
     }
-    bodiesDetails.clear()
   }
 
   private def drawCircle(drawer: scala.swing.Graphics2D, xCenter: Double, yCenter: Double, radius: Double) {
@@ -33,8 +36,5 @@ class NBodiesCanvas() extends Panel {
     drawer.fill(ellipse);
   }
 
-  def setBodiesDetailsAndPaint(bodiesDet: ListBuffer[(Point2D, Double)]) = {
-    bodiesDetails = bodiesDet
-    this.peer.repaint()
-  }
+  def setBodiesDetails(list: MutableList[(BodyDetails, ActorRef)]) = bodiesDetails = list
 }

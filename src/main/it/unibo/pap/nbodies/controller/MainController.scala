@@ -4,27 +4,29 @@ import akka.actor._
 import akka.util._
 import java.awt.geom.Point2D
 import java.awt.Point
-import it.unibo.pap.nbodies.model._
-import it.unibo.pap.nbodies.model.body.Body
 import akka.dispatch.Futures
 import scala.concurrent.Await
 import akka.pattern.{ ask, pipe }
 import akka.util.Timeout
 import scala.concurrent._
-import it.unibo.pap.nbodies.model.messages.Messages._
-import it.unibo.pap.nbodies.model.force.ForceCalculator
-import main.it.unibo.pap.nbodies.controller.Implicit
 import scala.collection.mutable.ListBuffer
+import scala.concurrent.duration._
+import java.util.concurrent.TimeUnit
+import it.unibo.pap.nbodies.model.BodyDetails
+import it.unibo.pap.nbodies.model.messages.Messages._
+import it.unibo.pap.nbodies.model.body.Body
 
 class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forceCalculator: ActorPath) extends Actor {
   implicit val ec = Implicit.ec
   implicit lazy val timeout = Implicit.timeout
   var currentBodiesNumber = bodiesNumber
+  var bodiesNumberStepTerminated = currentBodiesNumber
   var currentDeltaTime = deltaTime
-  var bodiesPositionUpdated = ListBuffer[(Point2D, Double)]()
-  createBodies(bodiesNumber)
-  context.actorSelection(painter) ! PaintObj(getBodiesDetailsList().to[ListBuffer])
+  var startMode = false
+  val painterRef = context.system.actorSelection(painter).resolveOne()
 
+  createBodies(currentBodiesNumber)
+  context.actorSelection(painter) ! SetBodiesDetails(getBodiesDetailsList())
   /**
    * TODO: Implement
    */
@@ -32,48 +34,43 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
     case StartSimultation(deltaTime) => {
       println("MainController: Start Button Pressed")
       currentDeltaTime = deltaTime
+      startMode = true
       self ! OneStep(deltaTime)
     }
     case Stop => {
       println("MainController: Stop Button Pressed")
+      startMode = false
       context.children.foreach(body => body ! Stop)
     }
     case Reset => {
       println("MainController: Reset Button Pressed")
+      startMode = false
       context.children.foreach(body => body ! Reset)
     }
     case OneStep(deltaTime) => {
       currentDeltaTime = deltaTime
+      bodiesNumberStepTerminated = currentBodiesNumber
       println("MainController: One Step Button Pressed")
       context.children.foreach(body => body ! OneStep(deltaTime))
     }
-    case PositionUpdated(bodyDetail) => {
-      if (bodiesPositionUpdated.length == bodiesNumber) bodiesPositionUpdated.clear()
-      bodiesPositionUpdated.append(bodyDetail)
-      if (bodiesPositionUpdated.length == bodiesNumber) {
-        context.actorSelection(painter) ! PaintObj(bodiesPositionUpdated)
+    case StepFinished => {
+      bodiesNumberStepTerminated -= 1
+      if (bodiesNumberStepTerminated == 0) {
+        Await.result(painterRef, 5 seconds) ! DrawFrame
+        if (startMode) self ! OneStep(currentDeltaTime)
       }
     }
   }
 
   private def createBodies(bodiesNumber: Int) = {
-    for (i <- 1 to bodiesNumber) context.actorOf(Props(new Body(forceCalculator)))
+    for (i <- 1 to bodiesNumber) context.actorOf(Props(new Body(forceCalculator, painter)))
   }
 
-  private def getBodyDetailsFuture(body: ActorRef) = {
-    val bodyDetailsFuture = for {
-      a <- ask(body, GetXCoordinate).mapTo[Double]
-      b <- ask(body, GetYCoordinate).mapTo[Double]
-      c <- ask(body, GetRadius).mapTo[Double]
-    } yield (new Point2D.Double(a, b), c)
-
-    bodyDetailsFuture
-  }
-
-  private def getBodiesDetailsList(): List[(Point2D, Double)] = {
-    var bodyDetailsList = List[(Point2D, Double)]()
+  private def getBodiesDetailsList() = {
+    var bodyDetailsList = List[(BodyDetails, ActorRef)]()
     context.children.foreach(body => {
-      bodyDetailsList ::= Await.result(getBodyDetailsFuture(body), timeout.duration)
+      val future = (body ? GetBodyDetails)
+      bodyDetailsList ::= (Await.result(future, timeout.duration).asInstanceOf[BodyDetails], body)
     })
     bodyDetailsList
   }

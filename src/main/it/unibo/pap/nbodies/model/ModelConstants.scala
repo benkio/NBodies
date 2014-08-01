@@ -8,6 +8,6 @@ object ModelConstants {
   val radiusDivider = 10
   val initialVelocity = new Point2D.Double(0, 0)
   val initialForce = new Point2D.Double(0, 0)
-  val startNextStepDelay = 1 second
+  val startNextStepDelay = 2 second
 
 }

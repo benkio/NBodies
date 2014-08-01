@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit
 import it.unibo.pap.nbodies.model.BodyDetails
 import it.unibo.pap.nbodies.model.messages.Messages._
 import it.unibo.pap.nbodies.model.body.Body
+import it.unibo.pap.nbodies.model.ModelConstants
 
 class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forceCalculator: ActorPath) extends Actor {
   implicit val ec = Implicit.ec
@@ -56,8 +57,8 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
     case StepFinished => {
       bodiesNumberStepTerminated -= 1
       if (bodiesNumberStepTerminated == 0) {
-        Await.result(painterRef, 5 seconds) ! DrawFrame
-        if (startMode) self ! OneStep(currentDeltaTime)
+        Await.result(painterRef, 5 second) ! DrawFrame
+        if (startMode) context.system.scheduler.scheduleOnce(ModelConstants.startNextStepDelay, self, OneStep(currentDeltaTime))
       }
     }
   }

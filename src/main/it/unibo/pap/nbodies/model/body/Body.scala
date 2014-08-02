@@ -30,8 +30,8 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisio
   implicit lazy val timeout = Implicit.timeout
   var currentDeltaTime = 0
   var bodyDetails = new BodyDetails(new Point2D.Double(
-    10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getWidth() - 20),
-    10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getHeight() - 20)),
+    Random.nextDouble() * ModelConstants.maxBodiesDistance,
+    Random.nextDouble() * ModelConstants.maxBodiesDistance),
     (Random.nextDouble() * ModelConstants.massMultiplier) + ModelConstants.minimumMass)
   var force = new Point2D.Double(ModelConstants.initialForceX, ModelConstants.initialForceY)
   var velocity = new Point2D.Double(ModelConstants.initialVelocityX, ModelConstants.initialVelocityY)
@@ -112,38 +112,40 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisio
     velocity.x += currentDeltaTime * (force.getX() / bodyDetails.mass)
     velocity.y += currentDeltaTime * (force.getY() / bodyDetails.mass)
 
-    //Boundary Position Managment
-
-    //In a corner, change randomly the values and reset force and velocity
-    if ((bodyDetails.coordinate.getX() == ViewConstants.CanvasDimension.getWidth() || bodyDetails.coordinate.getX() == 0)
-      && (bodyDetails.coordinate.getY() == ViewConstants.CanvasDimension.getHeight() || bodyDetails.coordinate.getY() == 0))
-      resetInternalValues
-
-    //Touch right Edge, Elastic Impact
-    if (bodyDetails.coordinate.getX() > ViewConstants.CanvasDimension.getWidth()) {
-      bodyDetails.coordinate.x = ViewConstants.CanvasDimension.getWidth() - 10
-      velocity.x = (-velocity.x)
-    }
-    //Touch Top Edge, Elastic Impact
-    if (bodyDetails.coordinate.getY() > ViewConstants.CanvasDimension.getHeight()) {
-      bodyDetails.coordinate.y = ViewConstants.CanvasDimension.getHeight() - 10
-      velocity.y = (-velocity.y)
-    }
-    //Touch left Edge, Elastic Impact
-    if (bodyDetails.coordinate.getX() < 0) {
-      bodyDetails.coordinate.x = 10
-      velocity.x = (-velocity.x)
-    }
-    //Touch Top bottom, Elastic Impact
-    if (bodyDetails.coordinate.getY() < 0) {
-      bodyDetails.coordinate.y = 10
-      velocity.y = (-velocity.y)
-    }
+    //    //Boundary Position Managment
+    //
+    //    //In a corner, change randomly the values and reset force and velocity
+    //    if ((bodyDetails.coordinate.getX() == ViewConstants.CanvasDimension.getWidth() || bodyDetails.coordinate.getX() == 0)
+    //      && (bodyDetails.coordinate.getY() == ViewConstants.CanvasDimension.getHeight() || bodyDetails.coordinate.getY() == 0))
+    //      resetInternalValues
+    //
+    //    //Touch right Edge, Elastic Impact
+    //    if (bodyDetails.coordinate.getX() > ViewConstants.CanvasDimension.getWidth()) {
+    //      bodyDetails.coordinate.x = ViewConstants.CanvasDimension.getWidth() - 10
+    //      velocity.x = (-velocity.x)
+    //    }
+    //    //Touch Top Edge, Elastic Impact
+    //    if (bodyDetails.coordinate.getY() > ViewConstants.CanvasDimension.getHeight()) {
+    //      bodyDetails.coordinate.y = ViewConstants.CanvasDimension.getHeight() - 10
+    //      velocity.y = (-velocity.y)
+    //    }
+    //    //Touch left Edge, Elastic Impact
+    //    if (bodyDetails.coordinate.getX() < 0) {
+    //      bodyDetails.coordinate.x = 10
+    //      velocity.x = (-velocity.x)
+    //    }
+    //    //Touch Top bottom, Elastic Impact
+    //    if (bodyDetails.coordinate.getY() < 0) {
+    //      bodyDetails.coordinate.y = 10
+    //      velocity.y = (-velocity.y)
+    //    }
   }
 
   private def resetInternalValues() {
     bodyDetails.mass = (Random.nextDouble() * ModelConstants.massMultiplier) + ModelConstants.minimumMass
-    bodyDetails.coordinate = new Point2D.Double(10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getWidth() - 20), 10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getHeight() - 20))
+    bodyDetails.coordinate = new Point2D.Double(
+      Random.nextDouble() * ModelConstants.maxBodiesDistance,
+      Random.nextDouble() * ModelConstants.maxBodiesDistance)
     bodyDetails.isCollided = false
     force = new Point2D.Double(ModelConstants.initialForceX, ModelConstants.initialForceY)
     velocity = new Point2D.Double(ModelConstants.initialVelocityX, ModelConstants.initialVelocityY)

@@ -20,6 +20,7 @@ import it.unibo.pap.nbodies.model.messages.Messages._
 import it.unibo.pap.nbodies.controller.Implicit
 import it.unibo.pap.nbodies.view.ViewConstants
 import it.unibo.pap.nbodies.controller._
+import it.unibo.pap.nbodies.model.calculators.CollisionCalculator
 
 /**
  * @author enricobenini
@@ -45,25 +46,22 @@ object NBodies extends Frame {
     var actorSystem = ActorSystem("actorSystem")
     var painter = actorSystem.actorOf(Props(new Painter(canvas)), "Painter")
     var forceCalculator = actorSystem.actorOf(Props(new ForceCalculator(bodiesNumber)), "forceCalculator")
-    var mainController = actorSystem.actorOf(Props(new MainController(bodiesNumber, deltaTime, painter.path, forceCalculator.path)), "mainController")
+    var collisionCalculator = actorSystem.actorOf(Props(new CollisionCalculator(bodiesNumber)), "collisionCalculator")
+    var mainController = actorSystem.actorOf(Props(new MainController(bodiesNumber, deltaTime, painter.path, forceCalculator.path, collisionCalculator.path)), "mainController")
 
     contents = new BoxPanel(Orientation.Vertical) {
       border = Swing.EmptyBorder(10, 20, 10, 20)
       contents += new BoxPanel(Orientation.Horizontal) {
         contents += Button("Start")({
-          forceCalculator ! StartSimultation
           mainController ! StartSimultation(deltaTimeTextField.getValue().asInstanceOf[Int])
         })
         contents += Button("One Step")({
-          forceCalculator ! OneStep
           mainController ! OneStep(deltaTimeTextField.getValue().asInstanceOf[Int])
         })
         contents += Button("Stop")({
-          forceCalculator ! Stop
           mainController ! Stop
         })
         contents += Button("Reset")({
-          forceCalculator ! Reset
           mainController ! Reset
         })
         contents += deltaTimeSpinnerWrapped

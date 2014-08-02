@@ -11,7 +11,7 @@ import it.unibo.pap.nbodies.utility.PhysicalEngine
 class ForceCalculator(bodiesNumber: Int) extends Actor {
   // ActorRef to reply, Coordinate, mass, force to calculate
   var bodiesDetails = new ListBuffer[(ActorRef, Point2D.Double, Double, Point2D.Double)]()
-
+  var currentBodiesNumber = bodiesNumber
   override def receive = {
     case StartSimultation => context.become(Ready)
     case OneStep => context.become(Ready)
@@ -23,10 +23,10 @@ class ForceCalculator(bodiesNumber: Int) extends Actor {
 
   def Ready: Receive = {
     case CalculateForce(coordinate, mass) => {
-      if (bodiesDetails.length < bodiesNumber) {
+      if (bodiesDetails.length < currentBodiesNumber) {
         val force = compute(coordinate, mass)
         bodiesDetails.append((sender(), coordinate, mass, force))
-        if (bodiesDetails.length == bodiesNumber) self ! sendForcesResults
+        if (bodiesDetails.length == currentBodiesNumber) self ! SendForcesResults
       } else unhandled(CalculateForce)
     }
     case Stop => {
@@ -37,10 +37,11 @@ class ForceCalculator(bodiesNumber: Int) extends Actor {
       bodiesDetails.clear
       context unbecome
     }
-    case sendForcesResults => {
+    case SendForcesResults => {
       bodiesDetails.foreach(body => { body._1 ! Force(body._4) })
       bodiesDetails.clear()
     }
+    case SetBodiesNumber(num) => currentBodiesNumber = num
   }
   private def compute(coordinate: Point2D.Double, mass: Double): Point2D.Double = {
     var newBodyForce = new Point2D.Double(0, 0)

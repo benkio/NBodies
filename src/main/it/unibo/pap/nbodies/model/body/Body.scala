@@ -24,7 +24,7 @@ import scala.concurrent.duration._
 import akka.actor.Cancellable
 import it.unibo.pap.nbodies.model.BodyDetails
 
-class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath) extends Actor {
+class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisionCalculatorPath: ActorPath) extends Actor {
 
   implicit val ec = Implicit.ec
   implicit lazy val timeout = Implicit.timeout
@@ -41,7 +41,7 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath) extends 
    * TODO: Implement the receive for the body
    */
   override def receive = {
-    case GetBodyDetails => sender() ! bodyDetails
+    case GetBodyDetails => sender ! bodyDetails
     case Stop => {
       println("Body: Stop Event")
       context.become(StopMode)
@@ -58,31 +58,50 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath) extends 
     }
     case Force(newForce) => {
       force = newForce
-      println("Body(" ++ bodyDetails.coordinate.getX().toString() ++ ", " ++ bodyDetails.coordinate.getY().toString() ++ ") new force calculate of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
+      //println("Body(" ++ bodyDetails.coordinate.getX().toString() ++ ", " ++ bodyDetails.coordinate.getY().toString() ++ ") new force calculate of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
       computeNewPosition()
       println("New Position Body(" ++ bodyDetails.coordinate.getX().toString() ++ ", " ++ bodyDetails.coordinate.getY().toString() ++ ") ")
+      context.actorSelection(collisionCalculatorPath) tell (CalculateCollision(bodyDetails.coordinate, bodyDetails.radius()), self)
+    }
+    case IsCollided => {
+      context.actorSelection(painterPath) tell (RemoveBody, self)
+      context.parent.tell(DecreaseBodiesNumber, self)
+      context.parent.tell(StepFinished, self)
+      context.become(Collided)
+    }
+    case NotCollided => {
       context.actorSelection(painterPath) tell (PaintBody(bodyDetails), self)
       context.parent.tell(StepFinished, self)
-
     }
   }
 
   def StopMode: Receive = {
     case OneStep(deltaTime) => {
-      context.unbecome();
+      context.unbecome;
       self forward OneStep(deltaTime)
     }
     case StartSimultation(deltaTime) => {
-      context.unbecome();
+      context.unbecome;
       self forward StartSimultation(deltaTime)
     }
     case Reset => {
-      resetInternalValues()
-      println("Body(" ++ bodyDetails.coordinate.getX().toString() ++ ", " ++ bodyDetails.coordinate.getY().toString() ++ ") new force calculate of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
-      context.actorSelection(painterPath) tell (PaintBody(bodyDetails), self)
-      context.actorSelection(painterPath) tell (DrawFrame, self)
+      resetOperation
     }
     case _ => unhandled()
+  }
+  def Collided: Receive = {
+    case Reset => {
+      resetOperation
+      context.unbecome
+    }
+    case _ => unhandled()
+  }
+
+  private def resetOperation() {
+    resetInternalValues
+    println("Body(" ++ bodyDetails.coordinate.getX().toString() ++ ", " ++ bodyDetails.coordinate.getY().toString() ++ ") new force reseted of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
+    context.actorSelection(painterPath) tell (PaintBody(bodyDetails), self)
+    context.actorSelection(painterPath) tell (DrawFrame, self)
   }
 
   private def computeNewPosition() {

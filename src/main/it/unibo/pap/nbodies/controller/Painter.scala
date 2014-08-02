@@ -25,6 +25,9 @@ class Painter(viewCanvas: NBodiesCanvas) extends Actor {
       bodiesDetails = bodiesDetails.filter(bodyDetails => bodyDetails._2 != sender)
       bodiesDetails.+=:((bodyDetails, sender))
     }
+    case RemoveBody => {
+      bodiesDetails = bodiesDetails.filter(bodyDetails => bodyDetails._2 != sender)
+    }
     case SetBodiesDetails(list) => {
       bodiesDetails.clear()
       bodiesDetails = list.to[MutableList]

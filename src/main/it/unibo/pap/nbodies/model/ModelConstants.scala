@@ -10,6 +10,6 @@ object ModelConstants {
   val initialVelocityY = 0
   val initialForceX = 0
   val initialForceY = 0
-  val startNextStepDelay = 200 millisecond
+  val startNextStepDelay = 50 millisecond
 
 }

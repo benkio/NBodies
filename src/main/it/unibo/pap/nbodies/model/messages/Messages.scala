@@ -18,6 +18,7 @@ object Messages {
    */
   case class PaintBody(newBodyDetails: BodyDetails) extends Request
   case class SetBodiesDetails(list: List[(BodyDetails, ActorRef)]) extends Request
+  case object RemoveBody extends Request
 
   /**
    * Basic body request for details
@@ -32,6 +33,8 @@ object Messages {
   case object Stop extends Request
   case object Reset extends Request
   case object StepFinished extends Request
+  case object DecreaseBodiesNumber extends Request
+  case class SetBodiesNumber(num: Int) extends Request
 
   /**
    * Messages to the ForceCalculator
@@ -51,17 +54,23 @@ object Messages {
    */
   case class Force(force: Point2D.Double) extends Response
 
+  /**
+   * Response of Collision Calculator
+   */
+  case object IsCollided extends Response
+  case object NotCollided extends Response
+
   //~~~~~~~~~~~~~~~~~~~~~~~Internal Messages~~~~~~~~~~~~~~~~~~~~~~~~~~
 
   /**
    * Internal Force Calculator Message
    */
-  case object sendForcesResults
+  case object SendForcesResults
 
   /**
    * Internal Force Calculator Message
    */
-  case object sendCollisionResults
+  case object SendCollisionResults
 
   /**
    * Internal body Message

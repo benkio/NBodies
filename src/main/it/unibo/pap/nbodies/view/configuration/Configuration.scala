@@ -40,8 +40,8 @@ object Configuration extends SimpleSwingApplication {
 
     reactions += {
       case ButtonClicked(b) => {
-        this.close()
-        NBodies.startNBodies(nBodiesTextField.getValue().asInstanceOf[Int], deltaTimeTextField.getValue().asInstanceOf[Int])
+        this.visible = false
+        NBodies.startNBodies(nBodiesTextField.getValue().asInstanceOf[Int], deltaTimeTextField.getValue().asInstanceOf[Int], this)
       }
     }
   }

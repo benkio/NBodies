@@ -23,6 +23,7 @@ import it.unibo.pap.nbodies.controller._
 import it.unibo.pap.nbodies.model.calculators.CollisionCalculator
 import scala.swing.event.MouseDragged
 import scala.swing.event.MouseReleased
+import it.unibo.pap.nbodies.view.configuration.Configuration
 
 /**
  * @author enricobenini
@@ -31,7 +32,7 @@ import scala.swing.event.MouseReleased
 object NBodies extends Frame {
   implicit val ec = Implicit.ec
   implicit lazy val timeout = Implicit.timeout
-  def startNBodies(bodiesNumber: Int, deltaTime: Int) = new Frame {
+  def startNBodies(bodiesNumber: Int, deltaTime: Int, mainframe: MainFrame) = new Frame {
     visible = true
     title = "NBodies Frame"
     size = ViewConstants.FrameDimension
@@ -66,6 +67,11 @@ object NBodies extends Frame {
         })
         contents += Button("Reset")({
           mainController ! Reset
+        })
+        contents += Button("Restart")({
+          actorSystem.shutdown
+          dispose
+          mainframe.visible = true
         })
         contents += deltaTimeSpinnerWrapped
       }

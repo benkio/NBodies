@@ -33,8 +33,8 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath) extends 
     10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getWidth() - 20),
     10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getHeight() - 20)),
     Random.nextDouble() * ModelConstants.massMultiplier)
-  var force = ModelConstants.initialForce
-  var velocity = ModelConstants.initialVelocity
+  var force = new Point2D.Double(ModelConstants.initialForceX, ModelConstants.initialForceY)
+  var velocity = new Point2D.Double(ModelConstants.initialVelocityX, ModelConstants.initialVelocityY)
   val forceCalculatorRef = context.system.actorSelection(forceCalculatorActorPath)
 
   /**
@@ -91,18 +91,29 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath) extends 
     velocity.x += currentDeltaTime * (force.getX() / bodyDetails.mass)
     velocity.y += currentDeltaTime * (force.getY() / bodyDetails.mass)
 
+    //Boundary Position Managment
+
+    //In a corner, change randomly the values and reset force and velocity
+    if ((bodyDetails.coordinate.getX() == ViewConstants.CanvasDimension.getWidth() || bodyDetails.coordinate.getX() == 0)
+      && (bodyDetails.coordinate.getY() == ViewConstants.CanvasDimension.getHeight() || bodyDetails.coordinate.getY() == 0))
+      resetInternalValues
+
+    //Touch right Edge, Elastic Impact
     if (bodyDetails.coordinate.getX() > ViewConstants.CanvasDimension.getWidth()) {
       bodyDetails.coordinate.x = ViewConstants.CanvasDimension.getWidth() - 10
       velocity.x = (-velocity.x)
     }
+    //Touch Top Edge, Elastic Impact
     if (bodyDetails.coordinate.getY() > ViewConstants.CanvasDimension.getHeight()) {
       bodyDetails.coordinate.y = ViewConstants.CanvasDimension.getHeight() - 10
       velocity.y = (-velocity.y)
     }
+    //Touch left Edge, Elastic Impact
     if (bodyDetails.coordinate.getX() < 0) {
       bodyDetails.coordinate.x = 10
       velocity.x = (-velocity.x)
     }
+    //Touch Top bottom, Elastic Impact
     if (bodyDetails.coordinate.getY() < 0) {
       bodyDetails.coordinate.y = 10
       velocity.y = (-velocity.y)
@@ -112,7 +123,7 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath) extends 
   private def resetInternalValues() {
     bodyDetails.mass = Random.nextDouble() * ModelConstants.massMultiplier
     bodyDetails.coordinate = new Point2D.Double(10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getWidth() - 20), 10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getHeight() - 20))
-    force = ModelConstants.initialForce
-    velocity = ModelConstants.initialVelocity
+    force = new Point2D.Double(ModelConstants.initialForceX, ModelConstants.initialForceY)
+    velocity = new Point2D.Double(ModelConstants.initialVelocityX, ModelConstants.initialVelocityY)
   }
 }

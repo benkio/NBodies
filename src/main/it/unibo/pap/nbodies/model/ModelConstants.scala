@@ -6,8 +6,10 @@ import scala.concurrent.duration._
 object ModelConstants {
   val massMultiplier = 100
   val radiusDivider = 10
-  val initialVelocity = new Point2D.Double(0, 0)
-  val initialForce = new Point2D.Double(0, 0)
-  val startNextStepDelay = 2 second
+  val initialVelocityX = 0
+  val initialVelocityY = 0
+  val initialForceX = 0
+  val initialForceY = 0
+  val startNextStepDelay = 200 millisecond
 
 }

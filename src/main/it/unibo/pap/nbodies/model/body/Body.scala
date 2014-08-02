@@ -63,6 +63,7 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath) extends 
       println("New Position Body(" ++ bodyDetails.coordinate.getX().toString() ++ ", " ++ bodyDetails.coordinate.getY().toString() ++ ") ")
       context.actorSelection(painterPath) tell (PaintBody(bodyDetails), self)
       context.parent.tell(StepFinished, self)
+
     }
   }
 

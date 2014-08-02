@@ -1,4 +1,4 @@
-package it.unibo.pap.nbodies.model.force
+package it.unibo.pap.nbodies.model.calculators
 
 import akka.actor.Actor
 import java.awt.geom.Point2D
@@ -29,8 +29,14 @@ class ForceCalculator(bodiesNumber: Int) extends Actor {
         if (bodiesDetails.length == bodiesNumber) self ! sendForcesResults
       } else unhandled(CalculateForce)
     }
-    case Stop => context unbecome
-    case Reset => context unbecome
+    case Stop => {
+      bodiesDetails.clear
+      context unbecome
+    }
+    case Reset => {
+      bodiesDetails.clear
+      context unbecome
+    }
     case sendForcesResults => {
       bodiesDetails.foreach(body => { body._1 ! Force(body._4) })
       bodiesDetails.clear()

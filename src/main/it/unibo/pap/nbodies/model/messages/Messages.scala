@@ -37,7 +37,11 @@ object Messages {
    * Messages to the ForceCalculator
    */
   case class CalculateForce(coordinate: Point2D.Double, mass: Double) extends Request
-  case object CanCalculate extends Request
+
+  /**
+   * Messages to the CollisionCalculator
+   */
+  case class CalculateCollision(coordinate: Point2D.Double, radius: Double) extends Request
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~Response~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -53,6 +57,11 @@ object Messages {
    * Internal Force Calculator Message
    */
   case object sendForcesResults
+
+  /**
+   * Internal Force Calculator Message
+   */
+  case object sendCollisionResults
 
   /**
    * Internal body Message

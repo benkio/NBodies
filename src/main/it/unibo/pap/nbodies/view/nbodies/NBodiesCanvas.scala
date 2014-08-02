@@ -19,6 +19,8 @@ import it.unibo.pap.nbodies.view.ViewConstants
 class NBodiesCanvas() extends Panel {
 
   var bodiesDetails = MutableList[(BodyDetails, ActorRef)]()
+  var mouseDraggedValues = new Point2D.Double(0, 0)
+  var tempClickPosition = new Point2D.Double(0, 0)
 
   override def paintComponent(g: scala.swing.Graphics2D) {
     super.paintComponent(g)
@@ -32,10 +34,32 @@ class NBodiesCanvas() extends Panel {
   }
 
   private def drawCircle(drawer: scala.swing.Graphics2D, xCenter: Double, yCenter: Double, radius: Double) {
-    val ellipse = new Ellipse2D.Double(xCenter - radius, yCenter - radius, 2 * radius, 2 * radius);
+    val xCoordinate = (xCenter - radius) + mouseDraggedValues.getX()
+    val yCoordinate = (yCenter - radius) + mouseDraggedValues.getY()
+
+    val ellipse = new Ellipse2D.Double(xCoordinate, yCoordinate, 2 * radius, 2 * radius);
     drawer.setColor(ViewConstants.BodyColor)
     drawer.fill(ellipse);
   }
 
   def setBodiesDetails(list: MutableList[(BodyDetails, ActorRef)]) = bodiesDetails = list
+
+  def MouseDragged(x: Double, y: Double) = {
+    if (tempClickPosition.getX() == 0 || tempClickPosition.getY() == 0) {
+      tempClickPosition.x = x
+      tempClickPosition.y = y
+    } else {
+      var distanceXAxe = tempClickPosition.getX() - x;
+      var distanceYAxe = tempClickPosition.getY() - y;
+      println(distanceXAxe.toString() ++ " " ++ distanceYAxe.toString())
+      mouseDraggedValues.x -= distanceXAxe
+      mouseDraggedValues.y += distanceYAxe
+      tempClickPosition.x = x
+      tempClickPosition.y = y
+    }
+    this.repaint
+  }
+
+  def resetClickPosition = tempClickPosition = new Point2D.Double(0, 0)
+  def resetMouseDragged = mouseDraggedValues = new Point2D.Double(0, 0)
 }

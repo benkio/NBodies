@@ -36,5 +36,10 @@ class Painter(viewCanvas: NBodiesCanvas) extends Actor {
       canvas.setBodiesDetails(bodiesDetails)
       canvas.repaint()
     }
+    case Reset => {
+      canvas.resetClickPosition
+      canvas.resetMouseDragged
+      canvas.repaint
+    }
   }
 }

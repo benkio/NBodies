@@ -59,6 +59,7 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
       context.actorSelection(forceCalculator) ! SetBodiesNumber(bodiesNumber)
       context.actorSelection(forceCalculator) ! Reset
       context.actorSelection(collisionCalculator) ! Reset
+      context.actorSelection(painter) ! Reset
       startMode = false
       context.children.foreach(body => body ! Reset)
       scheduler = context.system.scheduler.scheduleOnce(ViewConstants.FrameUpdateTime, painterRef, DrawFrame)

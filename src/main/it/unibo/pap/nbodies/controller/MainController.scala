@@ -16,6 +16,7 @@ import it.unibo.pap.nbodies.model.BodyDetails
 import it.unibo.pap.nbodies.model.messages.Messages._
 import it.unibo.pap.nbodies.model.body.Body
 import it.unibo.pap.nbodies.model.ModelConstants
+import it.unibo.pap.nbodies.view.ViewConstants
 
 class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forceCalculator: ActorPath, collisionCalculator: ActorPath) extends Actor {
   implicit val ec = Implicit.ec
@@ -24,7 +25,8 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
   var bodiesNumberStepTerminated = currentBodiesNumber
   var currentDeltaTime = deltaTime
   var startMode = false
-  val painterRef = context.system.actorSelection(painter).resolveOne()
+  val painterRef = Await.result(context.system.actorSelection(painter).resolveOne(), 5 second)
+  var scheduler = context.system.scheduler.scheduleOnce(ViewConstants.FrameUpdateTime, painterRef, DrawFrame)
 
   createBodies(currentBodiesNumber)
   context.actorSelection(painter) ! SetBodiesDetails(getBodiesDetailsList())
@@ -36,6 +38,7 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
       println("MainController: Start Button Pressed")
       currentDeltaTime = deltaTime
       startMode = true
+      scheduler = context.system.scheduler.schedule(Duration.Zero, ViewConstants.FrameUpdateTime, painterRef, DrawFrame)
       context.actorSelection(forceCalculator) ! StartSimultation
       context.actorSelection(collisionCalculator) ! StartSimultation
       self ! OneStep(deltaTime)
@@ -43,6 +46,7 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
     case Stop => {
       println("MainController: Stop Button Pressed")
       startMode = false
+      scheduler.cancel
       context.actorSelection(forceCalculator) ! Stop
       context.actorSelection(collisionCalculator) ! Stop
       context.children.foreach(body => body ! Stop)
@@ -50,12 +54,14 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
     case Reset => {
       println("MainController: Reset Button Pressed")
       currentBodiesNumber = bodiesNumber
+      scheduler.cancel
       context.actorSelection(collisionCalculator) ! SetBodiesNumber(bodiesNumber)
       context.actorSelection(forceCalculator) ! SetBodiesNumber(bodiesNumber)
       context.actorSelection(forceCalculator) ! Reset
       context.actorSelection(collisionCalculator) ! Reset
       startMode = false
       context.children.foreach(body => body ! Reset)
+      scheduler = context.system.scheduler.scheduleOnce(ViewConstants.FrameUpdateTime, painterRef, DrawFrame)
     }
     case OneStep(deltaTime) => {
       currentDeltaTime = deltaTime
@@ -68,9 +74,9 @@ class MainController(bodiesNumber: Int, deltaTime: Int, painter: ActorPath, forc
     case StepFinished => {
       bodiesNumberStepTerminated -= 1
       if (bodiesNumberStepTerminated == 0) {
+        if (scheduler.isCancelled) scheduler = context.system.scheduler.scheduleOnce(ViewConstants.FrameUpdateTime, painterRef, DrawFrame)
         context.actorSelection(collisionCalculator) ! SetBodiesNumber(currentBodiesNumber)
         context.actorSelection(forceCalculator) ! SetBodiesNumber(currentBodiesNumber)
-        Await.result(painterRef, 5 second) ! DrawFrame
         if (startMode) context.system.scheduler.scheduleOnce(ModelConstants.startNextStepDelay, self, OneStep(currentDeltaTime))
       }
     }

@@ -41,6 +41,7 @@ object NBodies extends Frame {
     val deltaTimeSpinnerWrapped = Component.wrap(deltaTimeTextField)
     val canvas = new NBodiesCanvas() {
       preferredSize = ViewConstants.CanvasDimension
+      background = ViewConstants.CanvasColor
     }
 
     var actorSystem = ActorSystem("actorSystem")

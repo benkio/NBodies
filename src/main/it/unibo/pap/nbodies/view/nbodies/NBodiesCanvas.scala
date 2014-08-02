@@ -14,6 +14,7 @@ import akka.actor.ActorRef
 import scala.collection.mutable.MutableList
 import it.unibo.pap.nbodies.model.BodyDetails
 import akka.actor.ActorRef
+import it.unibo.pap.nbodies.view.ViewConstants
 
 class NBodiesCanvas() extends Panel {
 
@@ -32,7 +33,7 @@ class NBodiesCanvas() extends Panel {
 
   private def drawCircle(drawer: scala.swing.Graphics2D, xCenter: Double, yCenter: Double, radius: Double) {
     val ellipse = new Ellipse2D.Double(xCenter - radius, yCenter - radius, 2 * radius, 2 * radius);
-    drawer.setColor(Color.BLACK)
+    drawer.setColor(ViewConstants.BodyColor)
     drawer.fill(ellipse);
   }
 

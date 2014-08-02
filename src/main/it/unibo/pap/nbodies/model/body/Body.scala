@@ -32,7 +32,7 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisio
   var bodyDetails = new BodyDetails(new Point2D.Double(
     10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getWidth() - 20),
     10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getHeight() - 20)),
-    Random.nextDouble() * ModelConstants.massMultiplier)
+    (Random.nextDouble() * ModelConstants.massMultiplier) + ModelConstants.minimumMass)
   var force = new Point2D.Double(ModelConstants.initialForceX, ModelConstants.initialForceY)
   var velocity = new Point2D.Double(ModelConstants.initialVelocityX, ModelConstants.initialVelocityY)
   val forceCalculatorRef = context.system.actorSelection(forceCalculatorActorPath)
@@ -48,6 +48,7 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisio
     }
     case Reset => {
       println("Body: Reset Event")
+      resetOperation
       context.become(StopMode)
     }
     case OneStep(deltaTime) => {
@@ -61,7 +62,7 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisio
       //println("Body(" ++ bodyDetails.coordinate.getX().toString() ++ ", " ++ bodyDetails.coordinate.getY().toString() ++ ") new force calculate of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
       computeNewPosition()
       println("New Position Body(" ++ bodyDetails.coordinate.getX().toString() ++ ", " ++ bodyDetails.coordinate.getY().toString() ++ ") ")
-      context.actorSelection(collisionCalculatorPath) tell (CalculateCollision(bodyDetails.coordinate, bodyDetails.radius()), self)
+      context.actorSelection(collisionCalculatorPath) tell (CalculateCollision(bodyDetails), self)
     }
     case IsCollided => {
       context.actorSelection(painterPath) tell (RemoveBody, self)
@@ -69,7 +70,8 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisio
       context.parent.tell(StepFinished, self)
       context.become(Collided)
     }
-    case NotCollided => {
+    case NotCollided(bodyDetails) => {
+      this.bodyDetails = bodyDetails
       context.actorSelection(painterPath) tell (PaintBody(bodyDetails), self)
       context.parent.tell(StepFinished, self)
     }
@@ -101,7 +103,6 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisio
     resetInternalValues
     println("Body(" ++ bodyDetails.coordinate.getX().toString() ++ ", " ++ bodyDetails.coordinate.getY().toString() ++ ") new force reseted of x:" ++ force.getX().toString() ++ " y:" ++ force.getY().toString())
     context.actorSelection(painterPath) tell (PaintBody(bodyDetails), self)
-    context.actorSelection(painterPath) tell (DrawFrame, self)
   }
 
   private def computeNewPosition() {
@@ -141,8 +142,9 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisio
   }
 
   private def resetInternalValues() {
-    bodyDetails.mass = Random.nextDouble() * ModelConstants.massMultiplier
+    bodyDetails.mass = (Random.nextDouble() * ModelConstants.massMultiplier) + ModelConstants.minimumMass
     bodyDetails.coordinate = new Point2D.Double(10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getWidth() - 20), 10 + Random.nextDouble() * (ViewConstants.CanvasDimension.getHeight() - 20))
+    bodyDetails.isCollided = false
     force = new Point2D.Double(ModelConstants.initialForceX, ModelConstants.initialForceY)
     velocity = new Point2D.Double(ModelConstants.initialVelocityX, ModelConstants.initialVelocityY)
   }

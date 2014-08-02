@@ -44,7 +44,7 @@ object Messages {
   /**
    * Messages to the CollisionCalculator
    */
-  case class CalculateCollision(coordinate: Point2D.Double, radius: Double) extends Request
+  case class CalculateCollision(bodyDetails: BodyDetails) extends Request
 
   //~~~~~~~~~~~~~~~~~~~~~~~~~~~Response~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -58,7 +58,7 @@ object Messages {
    * Response of Collision Calculator
    */
   case object IsCollided extends Response
-  case object NotCollided extends Response
+  case class NotCollided(bodyDetails: BodyDetails) extends Response
 
   //~~~~~~~~~~~~~~~~~~~~~~~Internal Messages~~~~~~~~~~~~~~~~~~~~~~~~~~
 

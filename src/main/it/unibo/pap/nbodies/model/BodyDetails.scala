@@ -7,4 +7,5 @@ class BodyDetails(c: Point2D.Double, m: Double) {
   var coordinate = new Point2D.Double(c.getX(), c.getY())
   var mass = new Double(m)
   var radius = () => mass / ModelConstants.radiusDivider
+  var isCollided = false
 }

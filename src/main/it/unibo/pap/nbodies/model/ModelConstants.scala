@@ -6,6 +6,7 @@ import scala.concurrent.duration._
 object ModelConstants {
   val massMultiplier = 100
   val radiusDivider = 10
+  val minimumMass = 10
   val initialVelocityX = 0
   val initialVelocityY = 0
   val initialForceX = 0

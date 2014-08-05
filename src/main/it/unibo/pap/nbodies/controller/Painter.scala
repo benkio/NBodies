@@ -31,6 +31,7 @@ class Painter(viewCanvas: NBodiesCanvas) extends Actor {
     case SetBodiesDetails(list) => {
       bodiesDetails.clear()
       bodiesDetails = list.to[MutableList]
+      self ! DrawFrame
     }
     case DrawFrame => {
       canvas.setBodiesDetails(bodiesDetails)

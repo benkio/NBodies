@@ -28,7 +28,7 @@ class NBodiesCanvas() extends Panel {
 
     println("bodiesDetails.lenght: " ++ bodiesDetails.length.toString())
     for (bodyDetails <- bodiesDetails) {
-      //println("Print " ++ bodyDetails._1.coordinate.getX().toString() ++ ", " ++ bodyDetails._1.coordinate.getY().toString())
+      println("Print " ++ bodyDetails._1.coordinate.getX().toString() ++ ", " ++ bodyDetails._1.coordinate.getY().toString())
       drawCircle(g, bodyDetails._1.coordinate.getX(), bodyDetails._1.coordinate.getY(), bodyDetails._1.radius())
     }
   }

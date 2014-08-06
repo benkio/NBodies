@@ -12,5 +12,5 @@ object ModelConstants {
   val initialForceX = 0
   val initialForceY = 0
   val startNextStepDelay = 50 millisecond
-  val maxBodiesDistance = 149600000000L
+  val maxBodiesDistance = 149600
 }

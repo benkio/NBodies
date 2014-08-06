@@ -24,6 +24,10 @@ import it.unibo.pap.nbodies.model.calculators.CollisionCalculator
 import scala.swing.event.MouseDragged
 import scala.swing.event.MouseReleased
 import it.unibo.pap.nbodies.view.configuration.Configuration
+import scala.swing.event.MouseClicked
+import scala.swing.event.MouseWheelMoved
+import java.awt.event.MouseWheelEvent
+import java.awt.event.MouseWheelListener
 
 /**
  * @author enricobenini
@@ -83,7 +87,8 @@ object NBodies extends Frame {
 
     reactions += {
       case me: MouseDragged => canvas.MouseDragged(me.point.getX(), me.point.getY())
-      case me: MouseReleased => canvas.resetClickPosition
+      case me: MouseClicked => canvas.clickPositionUpdated(me.point.getX(), me.point.getY())
+      case me: MouseWheelEvent => canvas.setViewScale(me.getWheelRotation())
     }
 
   }

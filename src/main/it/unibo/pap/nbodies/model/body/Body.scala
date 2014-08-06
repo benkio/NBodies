@@ -32,7 +32,7 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisio
   var bodyDetails = new BodyDetails(new Point2D.Double(
     Random.nextDouble() * ModelConstants.maxBodiesDistance * 2 - ModelConstants.maxBodiesDistance,
     Random.nextDouble() * ModelConstants.maxBodiesDistance * 2 - ModelConstants.maxBodiesDistance),
-    (Random.nextDouble() * ModelConstants.massMultiplier) + ModelConstants.minimumMass)
+    ((Random.nextDouble() * ModelConstants.massMultiplier) + ModelConstants.minimumMass))
   var force = new Point2D.Double(ModelConstants.initialForceX, ModelConstants.initialForceY)
   var velocity = new Point2D.Double(ModelConstants.initialVelocityX, ModelConstants.initialVelocityY)
   val forceCalculatorRef = context.system.actorSelection(forceCalculatorActorPath)

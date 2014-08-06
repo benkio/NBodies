@@ -38,8 +38,7 @@ class Painter(viewCanvas: NBodiesCanvas) extends Actor {
       canvas.repaint()
     }
     case Reset => {
-      canvas.resetClickPosition
-      canvas.resetMouseDragged
+      canvas.resetView
       canvas.repaint
     }
   }

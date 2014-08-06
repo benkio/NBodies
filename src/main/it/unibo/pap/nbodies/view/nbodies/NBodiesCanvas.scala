@@ -41,6 +41,9 @@ class NBodiesCanvas() extends Panel {
     val scaleX = (x: Double) => math.round(((x / viewScale) * ViewConstants.CanvasDimension.getWidth()))
     val scaleY = (x: Double) => math.round(((x / viewScale) * ViewConstants.CanvasDimension.getHeight()))
 
+    println(radius)
+    println(viewScale)
+
     var scaledRadius: Double = 1
     if (scaleX(radius) > 1) { scaledRadius = scaleX(radius) }
     if (!imageCenterUpdate) {
@@ -76,6 +79,25 @@ class NBodiesCanvas() extends Panel {
     this.repaint
   }
 
-  def resetClickPosition = tempClickPosition = new Point2D.Double(0, 0)
-  def resetMouseDragged = imageCenterUpdate = false
+  def moveCenter(x: Int, y: Int) {
+    imageCenterUpdate = true
+    imageCenter.x -= x
+    imageCenter.y += y
+  }
+
+  def clickPositionUpdated(x: Double, y: Double) {
+    tempClickPosition.x = x
+    tempClickPosition.y = y
+  }
+
+  def setViewScale(mouseWheel: Int) {
+    println("test wheel")
+    viewScale += (mouseWheel * (viewScale / 10))
+    repaint
+  }
+
+  def resetView = {
+    viewScale = ViewConstants.defaultScale
+    imageCenterUpdate = false
+  }
 }

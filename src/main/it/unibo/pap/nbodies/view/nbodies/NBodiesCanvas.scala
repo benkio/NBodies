@@ -15,31 +15,47 @@ import scala.collection.mutable.MutableList
 import it.unibo.pap.nbodies.model.BodyDetails
 import akka.actor.ActorRef
 import it.unibo.pap.nbodies.view.ViewConstants
+import java.awt.Graphics2D
+import it.unibo.pap.nbodies.model.ModelConstants
 
 class NBodiesCanvas() extends Panel {
 
   var bodiesDetails = MutableList[(BodyDetails, ActorRef)]()
-  var mouseDraggedValues = new Point2D.Double(0, 0)
+  var imageCenter = new Point2D.Double(0, 0)
   var tempClickPosition = new Point2D.Double(0, 0)
+  var viewScale = ViewConstants.defaultScale
+  var imageCenterUpdate = false
 
-  override def paintComponent(g: scala.swing.Graphics2D) {
-    super.paintComponent(g)
-    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+  override def paintComponent(g: Graphics2D) {
+
+    g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
 
     println("bodiesDetails.lenght: " ++ bodiesDetails.length.toString())
     for (bodyDetails <- bodiesDetails) {
-      println("Print " ++ bodyDetails._1.coordinate.getX().toString() ++ ", " ++ bodyDetails._1.coordinate.getY().toString())
+      //println("Print " ++ bodyDetails._1.coordinate.getX().toString() ++ ", " ++ bodyDetails._1.coordinate.getY().toString())
       drawCircle(g, bodyDetails._1.coordinate.getX(), bodyDetails._1.coordinate.getY(), bodyDetails._1.radius())
     }
   }
 
   private def drawCircle(drawer: scala.swing.Graphics2D, xCenter: Double, yCenter: Double, radius: Double) {
-    val xCoordinate = (xCenter - radius) + mouseDraggedValues.getX()
-    val yCoordinate = (yCenter - radius) + mouseDraggedValues.getY()
+    val scaleX = (x: Double) => math.round(((x / viewScale) * ViewConstants.CanvasDimension.getWidth()))
+    val scaleY = (x: Double) => math.round(((x / viewScale) * ViewConstants.CanvasDimension.getHeight()))
 
-    val ellipse = new Ellipse2D.Double(xCoordinate, yCoordinate, 2 * radius, 2 * radius);
+    var scaledRadius: Double = 1
+    if (scaleX(radius) > 1) { scaledRadius = scaleX(radius) }
+    if (!imageCenterUpdate) {
+      imageCenterUpdate = true
+      imageCenter.y = ViewConstants.CanvasDimension.getHeight() / 2
+      imageCenter.x = ViewConstants.CanvasDimension.getWidth() / 2
+    }
+
+    val xCoordinate = scaleX(xCenter) + (imageCenter.getX() - (scaledRadius / 2))
+    val yCoordinate = ViewConstants.CanvasDimension.getHeight() - (scaleY(yCenter) + (imageCenter.getY() - (scaledRadius / 2)))
+
+    val ellipse = new Ellipse2D.Double(xCoordinate, yCoordinate, 2 * scaledRadius, 2 * scaledRadius)
+    println("Print, drawed " ++ xCoordinate.toString ++ ", " ++ yCoordinate.toString ++ " radius: " ++ scaledRadius.toString)
     drawer.setColor(ViewConstants.BodyColor)
-    drawer.fill(ellipse);
+    drawer.fill(ellipse)
   }
 
   def setBodiesDetails(list: MutableList[(BodyDetails, ActorRef)]) = bodiesDetails = list
@@ -52,8 +68,8 @@ class NBodiesCanvas() extends Panel {
       var distanceXAxe = tempClickPosition.getX() - x;
       var distanceYAxe = tempClickPosition.getY() - y;
       println(distanceXAxe.toString() ++ " " ++ distanceYAxe.toString())
-      mouseDraggedValues.x -= distanceXAxe
-      mouseDraggedValues.y += distanceYAxe
+      imageCenter.x += distanceXAxe
+      imageCenter.y += distanceYAxe
       tempClickPosition.x = x
       tempClickPosition.y = y
     }
@@ -61,5 +77,5 @@ class NBodiesCanvas() extends Panel {
   }
 
   def resetClickPosition = tempClickPosition = new Point2D.Double(0, 0)
-  def resetMouseDragged = mouseDraggedValues = new Point2D.Double(0, 0)
+  def resetMouseDragged = imageCenterUpdate = false
 }

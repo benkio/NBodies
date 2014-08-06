@@ -30,8 +30,8 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisio
   implicit lazy val timeout = Implicit.timeout
   var currentDeltaTime = 0
   var bodyDetails = new BodyDetails(new Point2D.Double(
-    Random.nextDouble() * ModelConstants.maxBodiesDistance,
-    Random.nextDouble() * ModelConstants.maxBodiesDistance),
+    Random.nextDouble() * ModelConstants.maxBodiesDistance * 2 - ModelConstants.maxBodiesDistance,
+    Random.nextDouble() * ModelConstants.maxBodiesDistance * 2 - ModelConstants.maxBodiesDistance),
     (Random.nextDouble() * ModelConstants.massMultiplier) + ModelConstants.minimumMass)
   var force = new Point2D.Double(ModelConstants.initialForceX, ModelConstants.initialForceY)
   var velocity = new Point2D.Double(ModelConstants.initialVelocityX, ModelConstants.initialVelocityY)
@@ -144,8 +144,8 @@ class Body(forceCalculatorActorPath: ActorPath, painterPath: ActorPath, collisio
   private def resetInternalValues() {
     bodyDetails.mass = (Random.nextDouble() * ModelConstants.massMultiplier) + ModelConstants.minimumMass
     bodyDetails.coordinate = new Point2D.Double(
-      Random.nextDouble() * ModelConstants.maxBodiesDistance,
-      Random.nextDouble() * ModelConstants.maxBodiesDistance)
+      Random.nextDouble() * ModelConstants.maxBodiesDistance * 2 - ModelConstants.maxBodiesDistance,
+      Random.nextDouble() * ModelConstants.maxBodiesDistance * 2 - ModelConstants.maxBodiesDistance)
     bodyDetails.isCollided = false
     force = new Point2D.Double(ModelConstants.initialForceX, ModelConstants.initialForceY)
     velocity = new Point2D.Double(ModelConstants.initialVelocityX, ModelConstants.initialVelocityY)

@@ -4,7 +4,7 @@ import it.unibo.pap.nbodies.model.body.Body
 import java.awt.geom.Point2D
 
 object PhysicalEngine {
-  val g = 9.81
+  val g = 6.67428 * (Math.pow(10, -11))
 
   /**
    * Calculates the force between two bodies

@@ -53,7 +53,7 @@ class CollisionCalculator(bodiesNumber: Int) extends Actor {
 
   private def compute(bodyDetails: BodyDetails): BodyDetails = {
     bodiesDetails.foreach(body => {
-      val collided = PhysicalEngine.getDistance(bodyDetails.coordinate, body._2.coordinate) <= ((bodyDetails.radius() + body._2.radius()) * 2)
+      val collided = PhysicalEngine.getDistance(bodyDetails.coordinate, body._2.coordinate) <= (bodyDetails.radius() + body._2.radius())
       if (collided) {
         if (bodyDetails.radius() < body._2.radius()) {
           bodyDetails.isCollided = collided
